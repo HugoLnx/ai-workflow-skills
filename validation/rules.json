@@ -1,0 +1,352 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Machine-readable validation rule definitions for cross-skills validator",
+  "version": "1.0.0",
+  "rules": [
+    {
+      "id": "STR-001",
+      "category": "STRUCTURE",
+      "severity": "ERROR",
+      "title": "Required frontmatter fields present",
+      "description": "Skill .md files require 'name' and 'description'. Cursor .mdc files require 'description' and 'alwaysApply'. UIR requires 'meta', 'context', 'rules'.",
+      "applies_to": ["skill.md", "*.mdc", "uir.json"],
+      "fix": "Add the missing frontmatter field to the file header."
+    },
+    {
+      "id": "STR-002",
+      "category": "STRUCTURE",
+      "severity": "ERROR",
+      "title": "YAML frontmatter is valid YAML",
+      "description": "The --- delimited block at the top of the file must parse as valid YAML.",
+      "applies_to": ["*.md", "*.mdc"],
+      "fix": "Check for unquoted colons, tabs instead of spaces, or invalid boolean/null values."
+    },
+    {
+      "id": "STR-003",
+      "category": "STRUCTURE",
+      "severity": "WARNING",
+      "title": "UIR version is valid semver",
+      "description": "meta.version must match the pattern X.Y.Z where X, Y, Z are non-negative integers.",
+      "applies_to": ["uir.json"],
+      "fix": "Set meta.version to a semver string, e.g. '1.0.0'."
+    },
+    {
+      "id": "STR-004",
+      "category": "STRUCTURE",
+      "severity": "ERROR",
+      "title": "UIR enum fields use allowed values",
+      "description": "Fields with enum constraints (meta.source.method, rules[].scope, rules[].category, hooks[].event) must use values defined in the UIR schema.",
+      "applies_to": ["uir.json"],
+      "fix": "Check schema/uir.schema.json for the allowed enum values for each field."
+    },
+    {
+      "id": "STR-005",
+      "category": "STRUCTURE",
+      "severity": "ERROR",
+      "title": "Cursor alwaysApply is a boolean",
+      "description": "Cursor parses alwaysApply as a boolean. Using a string 'true' or 'false' will be treated as truthy/falsy string, not a boolean.",
+      "applies_to": ["*.mdc"],
+      "fix": "Use 'alwaysApply: true' or 'alwaysApply: false' without quotes."
+    },
+    {
+      "id": "STR-006",
+      "category": "STRUCTURE",
+      "severity": "WARNING",
+      "title": "UIR project_summary is substantive",
+      "description": "context.project_summary under 50 characters likely has an unfilled placeholder.",
+      "applies_to": ["uir.json"],
+      "fix": "Write a meaningful project summary of at least 1-2 sentences."
+    },
+    {
+      "id": "STR-007",
+      "category": "STRUCTURE",
+      "severity": "INFO",
+      "title": "UIR rules array is non-empty",
+      "description": "A UIR with no rules will produce configs with no behavioral guidance for AI assistants.",
+      "applies_to": ["uir.json"],
+      "fix": "Add at least a few fundamental rules reflecting your project's conventions."
+    },
+    {
+      "id": "REF-001",
+      "category": "REFERENCES",
+      "severity": "WARNING",
+      "title": "memory.always_load paths exist",
+      "description": "Every path in memory.always_load[] must resolve to an existing file relative to the repo root.",
+      "applies_to": ["uir.json"],
+      "fix": "Verify the file paths or remove non-existent entries from memory.always_load."
+    },
+    {
+      "id": "REF-002",
+      "category": "REFERENCES",
+      "severity": "WARNING",
+      "title": "memory.on_demand paths exist",
+      "description": "Every path in memory.on_demand[] must resolve to an existing file.",
+      "applies_to": ["uir.json"],
+      "fix": "Verify the file paths or remove non-existent entries from memory.on_demand."
+    },
+    {
+      "id": "REF-003",
+      "category": "REFERENCES",
+      "severity": "ERROR",
+      "title": "rules[].id values are unique",
+      "description": "Every rule must have a unique id within the UIR document.",
+      "applies_to": ["uir.json"],
+      "fix": "Rename duplicate rule ids to be unique slugs."
+    },
+    {
+      "id": "REF-004",
+      "category": "REFERENCES",
+      "severity": "ERROR",
+      "title": "agents[].id values are unique",
+      "description": "Every agent must have a unique id within the UIR document.",
+      "applies_to": ["uir.json"],
+      "fix": "Rename duplicate agent ids."
+    },
+    {
+      "id": "REF-005",
+      "category": "REFERENCES",
+      "severity": "ERROR",
+      "title": "skills[].id values are unique",
+      "description": "Every skill must have a unique id within the UIR document.",
+      "applies_to": ["uir.json"],
+      "fix": "Rename duplicate skill ids."
+    },
+    {
+      "id": "REF-006",
+      "category": "REFERENCES",
+      "severity": "WARNING",
+      "title": "Template variable references resolve",
+      "description": "Every {{VARIABLE}} placeholder in a .tmpl file must correspond to a known UIR field or standard template variable.",
+      "applies_to": ["*.tmpl"],
+      "fix": "Remove or fill in unknown placeholders, or add them to the template variable substitution table in modules/generator.md."
+    },
+    {
+      "id": "REF-007",
+      "category": "REFERENCES",
+      "severity": "ERROR",
+      "title": "CLAUDE.md @import paths exist",
+      "description": "Every @path/to/file reference in CLAUDE.md must resolve to an existing file.",
+      "applies_to": ["CLAUDE.md"],
+      "fix": "Create the referenced file or remove the @import reference."
+    },
+    {
+      "id": "CON-001",
+      "category": "CONFLICTS",
+      "severity": "WARNING",
+      "title": "Potentially contradictory rules",
+      "description": "Two rules with the same scope and scope_value contain opposite instructions (e.g. 'always use X' vs 'never use X').",
+      "applies_to": ["uir.json"],
+      "fix": "Review the flagged rules and consolidate them into a single authoritative rule."
+    },
+    {
+      "id": "CON-002",
+      "category": "CONFLICTS",
+      "severity": "ERROR",
+      "title": "Pattern in both allow and deny",
+      "description": "A permission pattern that appears in both permissions.allow and permissions.deny creates undefined behavior. In Claude Code, deny takes precedence.",
+      "applies_to": ["uir.json", "settings.json"],
+      "fix": "Remove the pattern from one of the lists. If deny is intended, remove from allow."
+    },
+    {
+      "id": "CON-003",
+      "category": "CONFLICTS",
+      "severity": "ERROR",
+      "title": "File in both always_load and ignore",
+      "description": "A file cannot be both always loaded for context and ignored.",
+      "applies_to": ["uir.json"],
+      "fix": "Remove the file from either memory.always_load or memory.ignore."
+    },
+    {
+      "id": "CON-004",
+      "category": "CONFLICTS",
+      "severity": "WARNING",
+      "title": "Same rule id in UIR and extensions",
+      "description": "An extensions.* object contains a rule id that already exists in the top-level rules array. The extension will overwrite the UIR version.",
+      "applies_to": ["uir.json"],
+      "fix": "Use a different id in the extension or remove the top-level rule if the extension is intentionally overriding it."
+    },
+    {
+      "id": "CON-005",
+      "category": "CONFLICTS",
+      "severity": "WARNING",
+      "title": "Cursor rule has both alwaysApply: true and globs",
+      "description": "When alwaysApply is true, the globs field has no effect in Cursor. The rule will apply to all files regardless of globs.",
+      "applies_to": ["*.mdc"],
+      "fix": "Either remove the globs field, or set alwaysApply: false to use glob-based activation."
+    },
+    {
+      "id": "SYN-001",
+      "category": "SYNTAX",
+      "severity": "WARNING",
+      "title": "Cursor glob patterns are valid",
+      "description": "Cursor uses picomatch glob semantics. Check for unbalanced braces, invalid ** usage, or empty patterns.",
+      "applies_to": ["*.mdc"],
+      "ecosystem": "cursor",
+      "fix": "Fix the glob pattern. Use ** for recursive matching, * for single path segment."
+    },
+    {
+      "id": "SYN-002",
+      "category": "SYNTAX",
+      "severity": "WARNING",
+      "title": "Unreachable Cursor rule",
+      "description": "A .mdc file with alwaysApply: false, no globs, and no description will never auto-activate. It can only be used as a manual @reference.",
+      "applies_to": ["*.mdc"],
+      "ecosystem": "cursor",
+      "fix": "Set alwaysApply: true, add globs, add a meaningful description, or document it as a manual-only rule."
+    },
+    {
+      "id": "SYN-003",
+      "category": "SYNTAX",
+      "severity": "WARNING",
+      "title": "Hook command references undefined env vars",
+      "description": "Shell variable references ($VAR or ${VAR}) in hook commands should be defined in the env block or be common system variables.",
+      "applies_to": ["settings.json"],
+      "ecosystem": "claude-code",
+      "fix": "Add the variable to the settings.json env block or use a hardcoded value."
+    },
+    {
+      "id": "SYN-004",
+      "category": "SYNTAX",
+      "severity": "WARNING",
+      "title": "Claude Code permission pattern format",
+      "description": "Permission patterns should be: bare tool name (Read), ToolName(glob) (Bash(git *)), or ToolName(*) for all invocations.",
+      "applies_to": ["settings.json", "uir.json"],
+      "ecosystem": "claude-code",
+      "fix": "Use the format: 'ToolName' or 'ToolName(pattern)' where pattern is a glob."
+    },
+    {
+      "id": "SYN-005",
+      "category": "SYNTAX",
+      "severity": "WARNING",
+      "title": "Aider model value format",
+      "description": "The model field in .aider.conf.yml should match a known model identifier. Check the Aider docs for supported model strings.",
+      "applies_to": [".aider.conf.yml", "aider.conf.yml"],
+      "ecosystem": "aider",
+      "fix": "Use a known model string such as 'claude-sonnet-4-5', 'gpt-4o', or 'gemini-2.0-flash'."
+    },
+    {
+      "id": "SYN-006",
+      "category": "SYNTAX",
+      "severity": "ERROR",
+      "title": ".aider.conf.yml is valid YAML",
+      "description": "The Aider configuration file must be valid YAML.",
+      "applies_to": [".aider.conf.yml", "aider.conf.yml"],
+      "ecosystem": "aider",
+      "fix": "Fix YAML syntax errors in the configuration file."
+    },
+    {
+      "id": "DUP-001",
+      "category": "DUPLICATES",
+      "severity": "WARNING",
+      "title": "Two rules have identical content",
+      "description": "Rules with identical content (after whitespace normalization) are redundant.",
+      "applies_to": ["uir.json"],
+      "fix": "Remove the duplicate rule, keeping the one with a more descriptive id and more populated fields."
+    },
+    {
+      "id": "DUP-002",
+      "category": "DUPLICATES",
+      "severity": "ERROR",
+      "title": "Two rules share the same id",
+      "description": "Rule ids must be unique. Same as REF-003.",
+      "applies_to": ["uir.json"],
+      "fix": "Rename one of the duplicate ids."
+    },
+    {
+      "id": "DUP-003",
+      "category": "DUPLICATES",
+      "severity": "WARNING",
+      "title": "Same glob in multiple alwaysApply Cursor rules",
+      "description": "Multiple .mdc files with alwaysApply: true and overlapping globs will both always load for matching files, potentially with conflicting guidance.",
+      "applies_to": ["*.mdc"],
+      "ecosystem": "cursor",
+      "fix": "Consolidate overlapping rules into a single file or ensure they are complementary, not conflicting."
+    },
+    {
+      "id": "DUP-004",
+      "category": "DUPLICATES",
+      "severity": "INFO",
+      "title": "Duplicate ignore patterns",
+      "description": "The same pattern appears multiple times in ignore_patterns or memory.ignore.",
+      "applies_to": ["uir.json"],
+      "fix": "Remove duplicate entries from the ignore lists."
+    },
+    {
+      "id": "CIR-001",
+      "category": "CIRCULAR",
+      "severity": "ERROR",
+      "title": "CLAUDE.md @import cycle",
+      "description": "A chain of @import references forms a cycle, which would cause infinite recursion when loading.",
+      "applies_to": ["CLAUDE.md"],
+      "ecosystem": "claude-code",
+      "fix": "Break the import cycle by restructuring the import hierarchy. Extract shared content to a non-importing file."
+    },
+    {
+      "id": "CIR-002",
+      "category": "CIRCULAR",
+      "severity": "WARNING",
+      "title": "UIR skill cross-reference cycle",
+      "description": "A skill's instructions reference another skill that references back to the first skill.",
+      "applies_to": ["uir.json"],
+      "fix": "Extract shared instructions into a common base section rather than cross-referencing skills."
+    },
+    {
+      "id": "COV-001",
+      "category": "COVERAGE",
+      "severity": "WARNING",
+      "title": "Hooks present but target is not Claude Code",
+      "description": "UIR hooks are Claude Code-native. When generating for Cursor, they degrade to rule text. For Codex/Aider, they are dropped entirely.",
+      "applies_to": ["uir.json"],
+      "ecosystem": "cursor,codex,aider",
+      "fix": "This is expected degradation. Review the CROSS-SKILLS: DEGRADED comments in the generated files."
+    },
+    {
+      "id": "COV-002",
+      "category": "COVERAGE",
+      "severity": "WARNING",
+      "title": "Permissions present but target is not Claude Code",
+      "description": "Tool permissions are Claude Code-native. They will be converted to rule text in other ecosystems with no enforcement.",
+      "applies_to": ["uir.json"],
+      "ecosystem": "cursor,codex,aider",
+      "fix": "This is expected degradation. Review the generated rule text to ensure it communicates the intent clearly."
+    },
+    {
+      "id": "COV-003",
+      "category": "COVERAGE",
+      "severity": "WARNING",
+      "title": "Sub-agents present but target is Cursor or Aider",
+      "description": "Multi-agent orchestration is not supported in Cursor or Aider. Agents will be flattened to context sections.",
+      "applies_to": ["uir.json"],
+      "ecosystem": "cursor,aider",
+      "fix": "This is expected degradation. Consider whether the flattened context adequately conveys the agent roles."
+    },
+    {
+      "id": "COV-004",
+      "category": "COVERAGE",
+      "severity": "WARNING",
+      "title": "File-glob rules will be lost for Codex or Aider",
+      "description": "Rules with scope: 'file-glob' have no native equivalent in Codex CLI or Aider. They will be flattened to global rules with a scope annotation.",
+      "applies_to": ["uir.json"],
+      "ecosystem": "codex,aider",
+      "fix": "This is expected degradation. The scope context is preserved as text in the flattened rule."
+    },
+    {
+      "id": "COV-005",
+      "category": "COVERAGE",
+      "severity": "INFO",
+      "title": "Permissions lists are empty",
+      "description": "Both permissions.allow and permissions.deny are empty. Consider adding explicit tool permission rules for security-sensitive projects.",
+      "applies_to": ["uir.json"],
+      "fix": "Add tool permission rules to permissions.allow and permissions.deny as appropriate for your project's security requirements."
+    },
+    {
+      "id": "COV-006",
+      "category": "COVERAGE",
+      "severity": "INFO",
+      "title": "No skills defined",
+      "description": "UIR skills[] is empty. Skills enable reusable, invocable task definitions for Claude Code.",
+      "applies_to": ["uir.json"],
+      "fix": "Run cross-skills in build-skill mode to generate reusable skill files from the pre-built library or from scratch."
+    }
+  ]
+}
