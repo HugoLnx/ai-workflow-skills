@@ -117,9 +117,19 @@ Structure (JSON):
 - If `hooks[]` is empty: omit the `hooks` key.
 - Only include `env` if `context.environment_variables[]` has entries with `example` values.
 
-### File: `skills/<skill-id>.md` (one per skill in `skills[]`)
+### Skill files (one per skill in `skills[]`)
 
 Use `templates/claude-code/skill.md.tmpl` for each entry in `skills[]`.
+
+Preferred layout (cross-tool content.md approach):
+1. Write shared instructions to `.skills/<skill-id>/content.md` (no frontmatter).
+2. Write `.claude/skills/<skill-id>/SKILL.md` with Claude Code frontmatter only.
+3. Create symlink: `.claude/skills/<skill-id>/content.md` → `../../../.skills/<skill-id>/content.md`
+   - Linux/Mac: `ln -s ../../../.skills/<skill-id>/content.md .claude/skills/<skill-id>/content.md`
+   - Windows: `mklink .claude\skills\<skill-id>\content.md ..\..\..\skills\<skill-id>\content.md`
+
+Flat layout (legacy fallback, single harness only): write `.claude/skills/<skill-id>.md`
+combining frontmatter + body. This is still valid but does not support cross-tool sharing.
 
 ---
 
@@ -202,12 +212,21 @@ Content:
 - Paragraph 2: tech stack as prose
 - Paragraph 3+: rules as prose paragraphs grouped by category
 
+### Skill files for Codex (`.agents/skills/`)
+
+For each skill in `skills[]`, also generate the cross-tool standard layout:
+1. Write `.agents/skills/<skill-id>/SKILL.md` with **only** `name` + `description`.
+   - Codex rejects unknown frontmatter fields with an error — never add other fields here.
+   - The `description` must be self-contained (covers what + when); Codex does not read `when_to_use`.
+2. Create symlink if shared source exists: `.agents/skills/<skill-id>/content.md` → `../../../.skills/<skill-id>/content.md`
+   - If no `.skills/` source exists yet, write instructions inline in `content.md` (no symlink).
+
 ### Degradation annotations for Codex
 
 - `hooks[]` → `# CROSS-SKILLS: NOT TRANSLATABLE — lifecycle hooks have no Codex equivalent; dropped`
 - `permissions.*` → `# CROSS-SKILLS: DEGRADED — permissions converted to rule text`
 - `memory.always_load` → mention files as "always consider these files for context" in Instructions
-- `skills[]` → append as `## Available Tasks` section with each skill as a subsection
+- `skills[]` → append as `## Available Tasks` section in AGENTS.md AND generate `.agents/skills/` directory files (above)
 
 ---
 
@@ -256,6 +275,42 @@ Preceded by a comment header.
 
 ---
 
+## Generation: `copilot`
+
+Output directory: `.github/skills/`
+
+GitHub Copilot reads skill files from `.github/skills/<skill-id>/SKILL.md`. It uses
+only `name` and `description` frontmatter; all other fields are silently ignored.
+
+### Skill files for Copilot
+
+For each skill in `skills[]`:
+
+1. Write `.github/skills/<skill-id>/SKILL.md`:
+   ```yaml
+   ---
+   name: <skill-id>
+   description: >
+     <what it does and when to use it — self-contained; Copilot reads only name+description>
+   ---
+   ```
+   Do not add `when_to_use`, `allowed-tools`, or any other field — they are ignored and
+   create noise.
+
+2. Create symlink if shared source exists: `.github/skills/<skill-id>/content.md` → `../../../.skills/<skill-id>/content.md`
+   - If no `.skills/` source exists, write instructions directly in `content.md` (no symlink).
+
+### Degradation annotations for Copilot
+
+- `permissions.*` → `# CROSS-SKILLS: NOT TRANSLATABLE — Copilot has no permissions concept; dropped`
+- `hooks[]` → `# CROSS-SKILLS: NOT TRANSLATABLE — Copilot has no lifecycle hooks; dropped`
+- `agents[]` → `# CROSS-SKILLS: NOT TRANSLATABLE — Copilot has no sub-agent definitions; dropped`
+- `rules[]` → Copilot does not have a global rules/conventions mechanism equivalent to CLAUDE.md;
+  consider adding project-level context via `.github/copilot-instructions.md` (out of scope for
+  skill generation — note in output).
+
+---
+
 ## Output Manifest
 
 After all files are written, print:
@@ -263,26 +318,38 @@ After all files are written, print:
 ```
 ## Generated Files
 
+### Shared skill sources
+- .skills/<id>/content.md            (one per skill — shared instructions)
+
 ### claude-code
-- CLAUDE.md           (<N> rules, <N> agents)
-- AGENTS.md           (if agents present)
-- settings.json       (if permissions or hooks present)
-- skills/<id>.md      (one per skill)
+- CLAUDE.md                          (<N> rules, <N> agents)
+- AGENTS.md                          (if agents present)
+- settings.json                      (if permissions or hooks present)
+- .claude/skills/<id>/SKILL.md       (one per skill — Claude Code frontmatter)
+- .claude/skills/<id>/content.md     (symlink → shared source)
 
 ### cursor
 - .cursor/rules/index.mdc
 - .cursor/rules/00-critical.mdc
 - .cursor/rules/01-conventions.mdc
 - ...
+- .cursor/skills/<id>/SKILL.md       (one per skill — Cursor frontmatter)
+- .cursor/skills/<id>/content.md     (symlink → shared source)
 
 ### codex
-- .codex/AGENTS.md
-- .codex/system-prompt.txt
+- AGENTS.md
+- system-prompt.txt
+- .agents/skills/<id>/SKILL.md       (one per skill — name+description only)
+- .agents/skills/<id>/content.md     (symlink → shared source)
+
+### copilot
+- .github/skills/<id>/SKILL.md      (one per skill — name+description only)
+- .github/skills/<id>/content.md    (symlink → shared source)
 
 ### aider
-- .aider/.aider.conf.yml
-- .aider/CONVENTIONS.md
-- .aider/.aiderignore
+- .aider.conf.yml
+- CONVENTIONS.md
+- .aiderignore
 
 ## Degradation Warnings
 - <N> fields degraded (see CROSS-SKILLS: DEGRADED comments in output files)

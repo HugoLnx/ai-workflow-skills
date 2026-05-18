@@ -22,6 +22,7 @@ If source ecosystem is not specified, auto-detect by checking for:
 - `.cursor/rules/` directory with `.mdc` files → `cursor`
 - `AGENTS.md` with OpenAI-style structure → `codex`
 - `.aider.conf.yml` → `aider`
+- `.github/skills/` directory → `copilot`
 
 ---
 
@@ -62,7 +63,14 @@ Read files in this order:
   - Map to UIR hook: `{ "event": ..., "matcher": ..., "command": ... }`
 - `env` → `context.environment_variables[]` (merge with existing, no overwrite)
 
-**skills/*.md** (if present)
+**`.claude/skills/`** (if present — supports both layouts)
+
+*Directory layout* (`.claude/skills/<id>/SKILL.md` + `content.md`):
+- Parse `SKILL.md` frontmatter: `name` → `id` and `name`; `description` → `description`; `when_to_use` → stored separately
+- Read `content.md` (follow symlink if it is one) → `instructions`
+- Add to `skills[]`
+
+*Flat layout* (`.claude/skills/<id>.md` or legacy `skills/<id>.md`):
 - Parse frontmatter `name` → `id` and `name`
 - Parse frontmatter `description` → `description`
 - Parse body → `instructions`
@@ -145,6 +153,33 @@ Read `.aiderignore`:
 Degradation notes:
 - All rules are global (no scoping in Aider) → `_degraded: true` on rules that had scope annotations
 - No permissions, hooks, or sub-agents extractable from Aider format
+
+---
+
+### Parser: `copilot`
+
+Read all `.github/skills/*/SKILL.md` files:
+
+For each file:
+1. Parse YAML frontmatter: `name` → `id` and `name`; `description` → `description`
+2. Look for `content.md` in the same directory (may be a symlink):
+   - If it exists and is a symlink: resolve target path and read content → `instructions`
+   - If it exists and is a regular file: read content → `instructions`
+   - If absent: use empty `instructions`; note in gap summary
+3. Add to `skills[]`
+
+Note: Copilot SKILL.md files carry only `name` + `description`. Any richer metadata
+(`when_to_use`, `allowed-tools`, scope, etc.) is absent. Mark all parsed skills as
+`_degraded: true`, `_degraded_reason: "Copilot format carries only name+description; when_to_use and allowed-tools are unavailable"`.
+
+Also check for `.github/copilot-instructions.md` (Copilot project-level instructions):
+- If present, extract body → one `rules[]` entry with `scope: "global"`, `category: "agent-behavior"`, `priority: 5`
+- Mark `_degraded: true`, `_degraded_reason: "Parsed from .github/copilot-instructions.md — structured rule categories unavailable"`
+
+Degradation notes to add to UIR:
+- No permissions found → `_degraded_reason: "Copilot has no native permissions"`
+- No hooks found → `_degraded_reason: "Copilot has no lifecycle hooks"`
+- No agents found → `_degraded_reason: "Copilot has no sub-agent definitions"`
 
 ---
 

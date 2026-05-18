@@ -94,9 +94,12 @@ Goal: Check one or more config files against the validation rules in
 
 **Action**: Read `modules/builder.md` and follow its instructions exactly.
 
-Goal: Generate a new reusable skill file in Claude Code format and optionally
-translate it to Cursor manual-activation rules, Aider CONVENTIONS.md sections,
-and Codex task descriptions.
+Goal: Generate a new reusable skill using the cross-tool `content.md` layout —
+shared instructions in `.skills/<name>/content.md`, per-harness `SKILL.md` files
+with harness-specific frontmatter in `.claude/skills/`, `.agents/skills/`,
+`.cursor/skills/`, and `.github/skills/`, with symlinks wiring each harness
+directory's `content.md` to the shared source. Optionally also translate to
+Aider CONVENTIONS.md sections.
 
 ---
 
@@ -134,10 +137,16 @@ The UIR is a JSON document conforming to `schema/uir.schema.json`. It contains:
 
 | Ecosystem ID | Config Files | Notes |
 |---|---|---|
-| `claude-code` | CLAUDE.md, AGENTS.md, settings.json, skills/*.md | Full UIR fidelity |
-| `cursor` | .cursor/rules/*.mdc | Permissions/hooks degrade to rule text |
-| `codex` | AGENTS.md, system-prompt.txt | Glob scoping flattened |
+| `claude-code` | CLAUDE.md, AGENTS.md, settings.json, `.claude/skills/` | Full UIR fidelity |
+| `cursor` | .cursor/rules/*.mdc, `.cursor/skills/` | Permissions/hooks degrade to rule text |
+| `codex` | AGENTS.md, system-prompt.txt, `.agents/skills/` | Glob scoping flattened; unknown frontmatter causes errors |
 | `aider` | .aider.conf.yml, CONVENTIONS.md, .aiderignore | Least expressive; hooks dropped |
+| `copilot` | `.github/skills/` | `name` + `description` frontmatter only |
+
+Skills harness folders follow the cross-tool open standard: `.agents/skills/` is recognized
+by Cursor, Copilot, and Codex in addition to their own per-tool directories. Per-tool
+directories (`.claude/skills/`, `.cursor/skills/`, `.github/skills/`) are preferred
+when harness-specific frontmatter is needed.
 
 Extensible to: windsurf, roo-code, continue, cline, openhand, gemini-cli.
 
