@@ -122,11 +122,11 @@ Structure (JSON):
 Use `templates/claude-code/skill.md.tmpl` for each entry in `skills[]`.
 
 Preferred layout (cross-tool content.md approach):
-1. Write shared instructions to `.skills/<skill-id>/content.md` (no frontmatter).
+1. Write shared instructions to `.ai/skills/<skill-id>/content.md` (no frontmatter).
 2. Write `.claude/skills/<skill-id>/SKILL.md` with Claude Code frontmatter only.
-3. Create symlink: `.claude/skills/<skill-id>/content.md` → `../../../.skills/<skill-id>/content.md`
-   - Linux/Mac: `ln -s ../../../.skills/<skill-id>/content.md .claude/skills/<skill-id>/content.md`
-   - Windows: `mklink .claude\skills\<skill-id>\content.md ..\..\..\skills\<skill-id>\content.md`
+3. Create symlink: `.claude/skills/<skill-id>/content.md` → `../../../.ai/skills/<skill-id>/content.md`
+   - Linux/Mac: `ln -s ../../../.ai/skills/<skill-id>/content.md .claude/skills/<skill-id>/content.md`
+   - Windows: `mklink .claude\skills\<skill-id>\content.md ..\..\..\ai\skills\<skill-id>\content.md`
 
 Flat layout (legacy fallback, single harness only): write `.claude/skills/<skill-id>.md`
 combining frontmatter + body. This is still valid but does not support cross-tool sharing.
@@ -218,8 +218,8 @@ For each skill in `skills[]`, also generate the cross-tool standard layout:
 1. Write `.agents/skills/<skill-id>/SKILL.md` with **only** `name` + `description`.
    - Codex rejects unknown frontmatter fields with an error — never add other fields here.
    - The `description` must be self-contained (covers what + when); Codex does not read `when_to_use`.
-2. Create symlink if shared source exists: `.agents/skills/<skill-id>/content.md` → `../../../.skills/<skill-id>/content.md`
-   - If no `.skills/` source exists yet, write instructions inline in `content.md` (no symlink).
+2. Create symlink if shared source exists: `.agents/skills/<skill-id>/content.md` → `../../../.ai/skills/<skill-id>/content.md`
+   - If no `.ai/skills/` source exists yet, write instructions inline in `content.md` (no symlink).
 
 ### Degradation annotations for Codex
 
@@ -297,8 +297,8 @@ For each skill in `skills[]`:
    Do not add `when_to_use`, `allowed-tools`, or any other field — they are ignored and
    create noise.
 
-2. Create symlink if shared source exists: `.github/skills/<skill-id>/content.md` → `../../../.skills/<skill-id>/content.md`
-   - If no `.skills/` source exists, write instructions directly in `content.md` (no symlink).
+2. Create symlink if shared source exists: `.github/skills/<skill-id>/content.md` → `../../../.ai/skills/<skill-id>/content.md`
+   - If no `.ai/skills/` source exists, write instructions directly in `content.md` (no symlink).
 
 ### Degradation annotations for Copilot
 
@@ -319,7 +319,7 @@ After all files are written, print:
 ## Generated Files
 
 ### Shared skill sources
-- .skills/<id>/content.md            (one per skill — shared instructions)
+- .ai/skills/<id>/content.md            (one per skill — shared instructions)
 
 ### claude-code
 - CLAUDE.md                          (<N> rules, <N> agents)

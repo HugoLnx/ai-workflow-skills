@@ -94,7 +94,7 @@ Goal: Check one or more config files against the validation rules in
 **Action**: Read `modules/builder.md` and follow its instructions exactly.
 
 Goal: Generate a new reusable skill using the cross-tool `content.md` layout —
-shared instructions in `.skills/<name>/content.md`, per-harness `SKILL.md` files
+shared instructions in `.ai/skills/<name>/content.md`, per-harness `SKILL.md` files
 with harness-specific frontmatter in `.claude/skills/`, `.agents/skills/`,
 `.cursor/skills/`, and `.github/skills/`, with symlinks wiring each harness
 directory's `content.md` to the shared source. Optionally also translate to

@@ -19,15 +19,15 @@ The recommended layout for a cross-tool skill keeps instructions in one place an
 lets each harness contribute only its own frontmatter:
 
 ```
-.skills/<skill-name>/content.md               ← shared instructions, no frontmatter
+.ai/skills/<skill-name>/content.md               ← shared instructions, no frontmatter
 .claude/skills/<skill-name>/SKILL.md          ← Claude Code frontmatter only
-.claude/skills/<skill-name>/content.md        ← symlink → ../../../.skills/<skill-name>/content.md
+.claude/skills/<skill-name>/content.md        ← symlink → ../../../.ai/skills/<skill-name>/content.md
 .agents/skills/<skill-name>/SKILL.md          ← Codex CLI frontmatter only
-.agents/skills/<skill-name>/content.md        ← symlink → ../../../.skills/<skill-name>/content.md
+.agents/skills/<skill-name>/content.md        ← symlink → ../../../.ai/skills/<skill-name>/content.md
 .cursor/skills/<skill-name>/SKILL.md          ← Cursor frontmatter only
-.cursor/skills/<skill-name>/content.md        ← symlink → ../../../.skills/<skill-name>/content.md
+.cursor/skills/<skill-name>/content.md        ← symlink → ../../../.ai/skills/<skill-name>/content.md
 .github/skills/<skill-name>/SKILL.md         ← GitHub Copilot frontmatter only
-.github/skills/<skill-name>/content.md       ← symlink → ../../../.skills/<skill-name>/content.md
+.github/skills/<skill-name>/content.md       ← symlink → ../../../.ai/skills/<skill-name>/content.md
 ```
 
 **Why file-level symlinks, not directory symlinks**: Claude Code and GitHub Copilot have
@@ -43,12 +43,12 @@ they allow harness-specific frontmatter customization.
 
 **Linux / macOS** (run inside each harness skill directory):
 ```sh
-ln -s ../../../.skills/<skill-name>/content.md content.md
+ln -s ../../../.ai/skills/<skill-name>/content.md content.md
 ```
 
 **Windows** (run inside each harness skill directory, Command Prompt):
 ```cmd
-mklink content.md ..\..\..\skills\<skill-name>\content.md
+mklink content.md ..\..\..\ai\skills\<skill-name>\content.md
 ```
 
 > **Windows requirements**: Developer Mode must be enabled AND `git config core.symlinks true`
@@ -162,7 +162,7 @@ Only ask for missing information.
 
 ### Step 2a — Shared instructions file
 
-Write `.skills/<skill-id>/content.md` (no frontmatter — instructions only):
+Write `.ai/skills/<skill-id>/content.md` (no frontmatter — instructions only):
 
 Body sections:
 - `## Purpose` — 1 paragraph: what it does, when to use it, what it produces
@@ -195,8 +195,8 @@ when_to_use: "<optional extended trigger guidance>"
 ```
 
 Create the symlink:
-- Linux/Mac: `ln -s ../../../.skills/<skill-id>/content.md .claude/skills/<skill-id>/content.md`
-- Windows: `mklink .claude\skills\<skill-id>\content.md ..\..\..\skills\<skill-id>\content.md`
+- Linux/Mac: `ln -s ../../../.ai/skills/<skill-id>/content.md .claude/skills/<skill-id>/content.md`
+- Windows: `mklink .claude\skills\<skill-id>\content.md ..\..\..\ai\skills\<skill-id>\content.md`
   (requires Developer Mode + `git config core.symlinks true`)
 
 ### Step 2c — Agents (Codex) harness file
@@ -216,8 +216,8 @@ description: >
 ```
 
 Create the symlink:
-- Linux/Mac: `ln -s ../../../.skills/<skill-id>/content.md .agents/skills/<skill-id>/content.md`
-- Windows: `mklink .agents\skills\<skill-id>\content.md ..\..\..\skills\<skill-id>\content.md`
+- Linux/Mac: `ln -s ../../../.ai/skills/<skill-id>/content.md .agents/skills/<skill-id>/content.md`
+- Windows: `mklink .agents\skills\<skill-id>\content.md ..\..\..\ai\skills\<skill-id>\content.md`
 
 ---
 
@@ -240,8 +240,8 @@ globs: [<scope glob if set>]  # omit if no scope
 ```
 
 Create the symlink:
-- Linux/Mac: `ln -s ../../../.skills/<skill-id>/content.md .cursor/skills/<skill-id>/content.md`
-- Windows: `mklink .cursor\skills\<skill-id>\content.md ..\..\..\skills\<skill-id>\content.md`
+- Linux/Mac: `ln -s ../../../.ai/skills/<skill-id>/content.md .cursor/skills/<skill-id>/content.md`
+- Windows: `mklink .cursor\skills\<skill-id>\content.md ..\..\..\ai\skills\<skill-id>\content.md`
 
 ### Option B — Cursor rules directory (legacy / standalone use)
 
@@ -282,8 +282,8 @@ description: >
 ```
 
 Create the symlink:
-- Linux/Mac: `ln -s ../../../.skills/<skill-id>/content.md .github/skills/<skill-id>/content.md`
-- Windows: `mklink .copilot\skills\<skill-id>\content.md ..\..\..\skills\<skill-id>\content.md`
+- Linux/Mac: `ln -s ../../../.ai/skills/<skill-id>/content.md .github/skills/<skill-id>/content.md`
+- Windows: `mklink .copilot\skills\<skill-id>\content.md ..\..\..\ai\skills\<skill-id>\content.md`
 
 ---
 
@@ -361,7 +361,7 @@ After generation, confirm:
 ## Skill Generated: <Skill Name>
 
 Shared source:
-- .skills/<skill-id>/content.md                    (instructions, no frontmatter)
+- .ai/skills/<skill-id>/content.md                    (instructions, no frontmatter)
 
 Harness files:
 - .claude/skills/<skill-id>/SKILL.md               (Claude Code frontmatter)
