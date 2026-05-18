@@ -77,21 +77,33 @@ When ambiguous, ask: "Should I analyze the codebase, generate a new skill, trans
 
 ## Anti-Patterns
 
-### Duplicating content.md body into SKILL.md
+### Anti-Pattern: Duplicating content.md body into SKILL.md
 **Novice**: "I'll paste the content into each SKILL.md so it's self-contained."
-**Expert**: This immediately breaks the single-source guarantee — any edit must now be made in five places. The `@content.md` reference and the build script exist precisely to prevent this.
+**Expert**: This immediately breaks the single-source guarantee — any edit must now be made in five places. Use `@content.md` in every SKILL.md and rely on the build script to propagate. The reference mechanism exists precisely to prevent duplication.
+**Timeline**: Pre-2024 (no `@content.md` include mechanism): copy-paste was the only option → 2024+: `@content.md` include + build script makes duplication unnecessary and harmful.
+**LLM mistake**: Models trained on monolithic config files default to self-contained files because most training examples have no include/reference mechanism. They optimize for "works in isolation" over "stays in sync."
+**Detection**: Any SKILL.md over ~10 lines (frontmatter + `@content.md` line) is a candidate for this violation. SKILL.md file size should be roughly equal to the `.yaml` frontmatter + 1 line.
 
-### Copying instead of symlinking
+### Anti-Pattern: Copying instead of symlinking
 **Novice**: "Symlinks are tricky on Windows — I'll just copy the files."
-**Expert**: Copies drift. Use symlinks and handle the Windows case explicitly (consult `references/symlink-strategy.md`). Copies are a last resort with a clear warning to re-run the build script on every content change.
+**Expert**: Copies drift silently. A copied `content.md` in `.claude/skills/` will not reflect edits made in `.ai/skills/` until manually re-copied. Always attempt symlinks first; handle Windows via Developer Mode or the fallback copy-with-warning path in `references/symlink-strategy.md`.
+**Timeline**: Pre-2021 (before Windows 10 Developer Mode was widely available): copies were the practical default → 2021+: Developer Mode makes symlinks available to normal users without admin rights.
+**LLM mistake**: Models treat `cp` and `ln -s` as equivalent "get the file there" operations. They do not model the downstream consequence of drift across multiple harness folders because they reason about immediate file creation, not long-term maintenance.
+**Detection**: `find .claude/skills -type f -name content.md` (not `-type l`) returns results — regular files instead of symlinks indicate copies were used.
 
-### Writing to project-level harness configs
+### Anti-Pattern: Writing to project-level harness configs
 **Novice**: "The user asked me to update their Cursor rules — I'll write to `.cursor/rules/`."
-**Expert**: That location is out of scope. Write only to `.cursor/skills/<name>/SKILL.md`.
+**Expert**: `.cursor/rules/`, `.github/instructions/`, `CLAUDE.md`, and `AGENTS.md` are project-level configs managed outside this skill's scope. This skill writes exclusively to the four harness `skills/` folders. Mixing the two layers corrupts project config and may override manually maintained rules.
+**Timeline**: 2023 (early harness designs): no separate skills folder — everything lived in project-level config → 2024+: dedicated `skills/` folders introduced, creating a clear layer separation.
+**LLM mistake**: Models conflate "harness config" with "harness skills" because the files look similar (YAML frontmatter + markdown). They pattern-match on file extension and folder proximity rather than the layer distinction.
+**Detection**: Any `Write` or `Edit` call targeting a path outside `.claude/skills/`, `.agents/skills/`, `.cursor/skills/`, or `.github/skills/` is a scope violation.
 
-### Mixing frontmatter fields across harnesses
-**Novice**: "I'll add `allowed-tools` to `cursor.yaml` since Claude uses it."
-**Expert**: Each `.yaml` file contains **only** the fields recognized by that harness. Consult `references/harness-frontmatter.md` for the exact field list per harness.
+### Anti-Pattern: Mixing frontmatter fields across harnesses
+**Novice**: "I'll add `allowed-tools` to `cursor.yaml` since Claude uses it — extra fields shouldn't hurt."
+**Expert**: Unknown fields are silently ignored by some harnesses and cause parse errors in others. Each `.yaml` file must contain only the fields recognized by that harness. Consult `references/harness-frontmatter.md` for the exact field list. When in doubt, use the minimum required fields.
+**Timeline**: 2023 (no field taxonomy): copy-paste across harnesses was common → 2024+: `references/harness-frontmatter.md` established the authoritative per-harness field lists.
+**LLM mistake**: Models see YAML as a free-form dictionary and optimize for "richer is better." They do not model harness-specific parsers that reject or silently drop unknown keys. Training data rarely includes harness parse errors as negative examples.
+**Detection**: Diff each `.yaml` file against the allowed-fields table in `references/harness-frontmatter.md`. Any key not in that harness's column is a violation.
 
 ---
 
@@ -101,6 +113,7 @@ Read only the files relevant to the current step — do not pre-load all referen
 
 | File | Consult When |
 |---|---|
+| `references/skill-quality-checklist.md` | Verifying quality of any generated skill before publishing |
 | `references/harness-frontmatter.md` | Writing or validating frontmatter for any harness |
 | `references/symlink-strategy.md` | Creating or debugging symlinks during generate/build-skill |
 | `references/build-algorithm.md` | Producing a build script in any language |
