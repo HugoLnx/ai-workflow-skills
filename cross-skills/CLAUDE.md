@@ -22,7 +22,6 @@ let cross-skills generate all the ecosystem-specific files from it.
 | `modules/` | Composable instruction modules (one per operating mode) |
 | `schema/` | UIR JSON schema, capability matrix, and an annotated example UIR |
 | `templates/` | Per-ecosystem config file templates with `{{PLACEHOLDER}}` variables |
-| `skills/` | Pre-built reusable skill library (code-review, debugging, test-gen, etc.) |
 | `validation/` | Validation rules (machine-readable JSON) and gap analysis reference |
 | `examples/` | Worked end-to-end examples showing UIR → generated configs |
 
@@ -54,19 +53,13 @@ Invoke with the Skill tool as `cross-skills`. Five modes:
 
 | ID | Tool | Config files | UIR fidelity |
 |---|---|---|---|
-| `claude-code` | Claude Code | CLAUDE.md, AGENTS.md, settings.json, skills/*.md | Full |
+| `claude-code` | Claude Code | CLAUDE.md, AGENTS.md, settings.json, `.claude/skills/` | Full |
 | `cursor` | Cursor | .cursor/rules/*.mdc | High (permissions/hooks degrade) |
 | `codex` | OpenAI Codex CLI | AGENTS.md, system-prompt.txt | Medium (scoping lost, hooks dropped) |
 | `aider` | Aider | .aider.conf.yml, CONVENTIONS.md, .aiderignore | Medium (scoping/hooks lost) |
 
 **Extensible to**: windsurf, roo-code, continue, cline, openhand, gemini-cli.
 See `schema/capability-matrix.json` for how to add a new ecosystem.
-
-## Pre-Built Skill Library
-
-Ready-to-use skills in `skills/`:
-`code-review`, `arch-analysis`, `debugging`, `test-gen`, `refactoring`, `docs`,
-`devops`, `unity`, `frontend`, `backend`, `onboarding`
 
 ## AI Behavior Rules
 

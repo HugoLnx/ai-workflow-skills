@@ -26,7 +26,6 @@ This skill is part of the `cross-skills` project. Key resource paths:
 - **UIR schema**: `schema/uir.schema.json`
 - **Ecosystem capability matrix**: `schema/capability-matrix.json`
 - **Templates root**: `templates/`
-- **Pre-built skill library**: `skills/`
 - **Validation rules**: `validation/rules.json`
 - **Translation gap reference**: `validation/gap-analysis.md`
 

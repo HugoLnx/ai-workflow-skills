@@ -9,7 +9,6 @@ and Codex task descriptions.
 Can generate from:
 - A description the user provides
 - An existing task workflow the user describes
-- One of the pre-built skill templates in `skills/`
 - A UIR `skills[]` entry
 
 ---
@@ -134,15 +133,12 @@ alwaysApply: false
 - **Skill name or description**: What the skill does (required)
 - **Target ecosystems**: Where to generate the skill (default: `claude-code` + all others)
 - **Output path**: Where to write the skill file(s)
-- **Source**: `new` (generate from scratch) or `library` (adapt from `skills/` library) or `uir` (from UIR skills[] entry)
+- **Source**: `new` (generate from scratch) or `uir` (from UIR skills[] entry)
 - **Scope**: Optional file glob this skill applies to (e.g. `**/*.test.ts`)
 
 ---
 
 ## Phase 1 — Skill Design
-
-If `source: "library"`: List available skills from `skills/` directory. Let the user
-choose one to adapt. Load it as the starting point.
 
 If `source: "uir"`: Load from UIR `skills[]` by id. Use its fields as the starting point.
 
@@ -388,24 +384,3 @@ Windows note: if symlinks appear as plain text files containing a path string,
 run: git config core.symlinks true  and re-checkout, or enable Developer Mode.
 ```
 
----
-
-## Pre-Built Skill Library Reference
-
-The `skills/` directory contains these ready-to-use skills:
-
-| File | Purpose | Key trigger phrases |
-|---|---|---|
-| `code-review.md` | Review changed code for bugs, style, security | "review this", "review changes", "code review" |
-| `arch-analysis.md` | Extract and document architectural patterns | "analyze architecture", "document structure" |
-| `debugging.md` | Systematic bug investigation workflow | "debug this", "investigate error", "find the bug" |
-| `test-gen.md` | Generate tests for untested code | "generate tests", "write tests for", "add test coverage" |
-| `refactoring.md` | Safe structural improvement without behavior change | "refactor this", "clean up", "restructure" |
-| `docs.md` | Generate or update documentation | "document this", "generate docs", "update README" |
-| `devops.md` | CI/CD, Docker, infrastructure tasks | "generate pipeline", "create Dockerfile", "set up CI" |
-| `unity.md` | Unity-specific C# patterns and conventions | "unity component", "monobehaviour", "coroutine" |
-| `frontend.md` | Frontend component and UI development | "create component", "frontend pattern", "UI review" |
-| `backend.md` | Backend API, data, and service development | "create endpoint", "API design", "service pattern" |
-| `onboarding.md` | New developer onboarding and codebase tour | "onboard", "explain the codebase", "new developer guide" |
-
-To adapt a pre-built skill: `build-skill source:library` and select from this list.
