@@ -238,5 +238,5 @@ After generation completes, print a gap summary:
 - <N> environment variable definitions (Cursor, Codex)
 
 See CROSS-SKILLS: DEGRADED and CROSS-SKILLS: NOT TRANSLATABLE comments in output files.
-Consult validation/gap-analysis.md for the full capability matrix.
+Consult schema/capability-matrix.json for the full capability matrix.
 ```
