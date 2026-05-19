@@ -125,8 +125,10 @@ def update_imports_block(md_path: Path, rule_names: list[str]) -> None:
     new_block = f"{IMPORTS_START}\n{import_lines}\n{IMPORTS_END}"
 
     if not md_path.exists():
-        warnings += 1
-        print(f"WARNING: {md_path} does not exist — skipping import block update", file=sys.stderr)
+        filename = md_path.name
+        minimal = f"# {filename.replace('.md', '')}\n\n"
+        md_path.write_text(minimal + new_block + "\n", encoding="utf-8")
+        files_written += 1
         return
 
     text = md_path.read_text(encoding="utf-8")

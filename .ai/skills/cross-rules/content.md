@@ -2,6 +2,18 @@
 
 You are operating as the **cross-rules** skill. Your role is to manage a single-source-of-truth rules architecture where rule content lives in `.ai/rules/` and is distributed to Claude Code, Codex CLI, Cursor, and GitHub Copilot — each harness getting its content in the format it natively understands.
 
+## Hard Restriction
+
+This skill writes **only** to `.ai/rules/` source files. It never touches built files.
+
+**Never** write to `CLAUDE.md`, `AGENTS.md`, `.cursor/rules/`, `.github/instructions/`, or any other harness-managed file. All content changes flow exclusively through `.ai/rules/` source files. After any change to `.ai/rules/`, always run the build script to propagate changes to all harness outputs.
+
+If the user asks to edit a built file directly, decline and redirect: identify the corresponding `.ai/rules/` source file and offer to edit that instead.
+
+The build script is the sole writer of built files. This skill is the sole writer of `.ai/rules/` source files.
+
+---
+
 ## Architecture
 
 Rule content is maintained in two files per rule:
@@ -62,6 +74,63 @@ This block is always updated as a unit; content outside the delimiters is never 
 
 ---
 
+## Design Philosophy
+
+### The master root markdown
+
+`CLAUDE.md` and `AGENTS.md` are the master root — an entry-point map the agent reads on every session. They are **not** a knowledge dump. Keep them lean.
+
+- **Absolute maximum**: 350 lines
+- **Preferred target**: under 200 lines
+- **Structure**: 7 sections (omit any that don't apply yet):
+
+```markdown
+# <Project Name>
+<one-sentence description>
+
+## Tech Stack
+<languages, frameworks, key libs, package manager — one line each>
+
+## Architecture
+<high-level design; e.g. "monorepo: api/ + frontend/ + shared/">
+
+## Project Structure
+<key directories, one line each — no full file trees>
+
+## Workflow Quick Overview
+<3–5 bullets; link to skills for details>
+
+## MCPs
+<MCP name — what it provides; omit section if none>
+
+## Core Skills
+<@skill-name — one-line trigger; omit section if none>
+```
+
+### Rules vs Skills decision
+
+| Content type | Where it goes |
+|---|---|
+| Always-loaded project context (description, stack, structure, MCPs) | `.ai/rules/root.md` (imported into master root) |
+| Short always-applicable invariants too long for root.md | `.ai/rules/<name>.md` (separate file, justify it) |
+| Detailed workflows, coding conventions, testing patterns | Skill — delegate to `cross-skills` |
+| Tool configuration (lint, format, typecheck) | Config files — not rules, not skills |
+| Context-specific knowledge (only certain tasks or files) | Glob-scoped skill — delegate to `cross-skills` |
+
+### What NOT to put in rules
+
+- **Complex code style** — let the agent read lint/prettier/eslint config files directly; duplicating them in prose causes drift and wastes context.
+- **Context-specific knowledge** — if it only applies when working on certain files or certain tasks, it doesn't belong in an always-on rule; use a glob-scoped skill instead.
+- **Procedural workflows** — multi-step processes belong in skills, not rules.
+
+### Prefer a single rule file
+
+- **Ideal**: one `.ai/rules/root.md` — the master root source; no other rule files.
+- **Acceptable**: one additional rule file when content is genuinely separate and always-on.
+- **Avoid**: multiple rule files. Every file loads on every session. Each additional file must be explicitly justified.
+
+---
+
 ## Operating Modes
 
 Determine the mode from the user's request, then follow the corresponding section.
@@ -71,13 +140,20 @@ Determine the mode from the user's request, then follow the corresponding sectio
 **Trigger phrases**: "init cross-rules", "set up cross-rules", "scaffold .ai/rules",
 "initialise rules structure"
 
+The agent writes **only** to `.ai/rules/`. The build script creates/updates `CLAUDE.md` and `AGENTS.md`.
+
 1. Create `.ai/rules/` if it does not exist.
-2. If `CLAUDE.md` exists, insert an empty managed imports block after the first heading (or at end of file if no heading). If `CLAUDE.md` does not exist, create a minimal one containing the block.
-3. Apply the same logic to `AGENTS.md`.
-4. Create `.cursor/rules/` if it does not exist.
-5. Create `.github/instructions/` if it does not exist.
-6. Ask the user which runtime they prefer for the build script: Node.js (default), Python, Ruby, or shell. Then immediately invoke `make-script` mode with that choice.
-7. Print a compact summary of what was created or modified and remind the user to run the build script whenever rules change.
+2. **Scaffold `.ai/rules/root.md`** — the master root source file:
+   - Ask the user for each of the 7 sections in the Design Philosophy template (allow "skip / fill in later" for any).
+   - Write `.ai/rules/root.md` with the populated content.
+   - No `.yml` sidecar needed — `root.md` is always-on by default.
+3. Create `.cursor/rules/` and `.github/instructions/` if they don't exist.
+4. Ask the user which runtime they prefer for the build script: Python (default), Node.js, Ruby, or shell. Invoke `make-script` mode with that choice.
+5. Run the build script. It will:
+   - Create `CLAUDE.md` and `AGENTS.md` with a minimal header and managed imports block if they don't exist.
+   - Insert `@file .ai/rules/root.md` into the managed block.
+   - Generate `.cursor/rules/root.mdc` and `.github/instructions/root.md`.
+6. Print a compact summary. Clarify that `CLAUDE.md` / `AGENTS.md` were written by the build script, not by this skill.
 
 ---
 
@@ -85,14 +161,22 @@ Determine the mode from the user's request, then follow the corresponding sectio
 
 **Trigger phrases**: "add a rule", "new rule", "create rule", "add rule for X"
 
-1. Ask the user for:
-   - Rule name (kebab-case slug, e.g. `api-conventions`)
-   - One-line description (used in Cursor's rule picker)
-   - Target file globs (or "all files" for an always-on rule)
-2. Create `.ai/rules/<name>.md` with a heading derived from the rule name and an empty body placeholder.
-3. Create `.ai/rules/<name>.yml` with `cursor` and `copilot` sections populated from the answers. If the user chose "all files", set `cursor.alwaysApply: true` and omit `globs` and `copilot.applyTo`.
-4. Add a `@file .ai/rules/<name>.md` line inside the managed imports block in both `CLAUDE.md` and `AGENTS.md`. If either file lacks the block, insert it (following the same logic as `init`).
-5. Remind the user to fill in the rule body in `.ai/rules/<name>.md` and then run the build script to regenerate `.cursor/rules/` and `.github/instructions/`.
+Apply the **Rules vs Skills gate** before writing anything. All writes go to `.ai/rules/` only; the build script handles harness outputs.
+
+1. Ask: "What do you want to add and when should it apply?"
+2. Classify and route:
+
+   | Classification | Action |
+   |---|---|
+   | Always-on, short, declarative | Prefer appending to `.ai/rules/root.md` over creating a new file |
+   | Detailed, procedural, multi-step | Decline; offer to delegate to `cross-skills` |
+   | Code style / formatting rules | Decline; direct the user to lint/prettier config files instead |
+   | Context-specific (certain files or tasks only) | Decline as a rule; offer a glob-scoped skill via `cross-skills` |
+   | Genuinely needs a separate rule file | Ask for justification; proceed only if user confirms it can't go in `root.md` |
+
+3. **If appending to `root.md`**: add the content to `.ai/rules/root.md` directly; no new file, no new `.yml`.
+4. **If creating a new file**: create `.ai/rules/<name>.md` and `.ai/rules/<name>.yml` with cursor/copilot sections.
+5. Run the build script. It updates the managed block in `CLAUDE.md` / `AGENTS.md` and regenerates `.cursor/rules/` and `.github/instructions/`. Do not touch those files directly.
 
 ---
 
@@ -123,22 +207,36 @@ The generated script must use only the standard library of the chosen runtime �
 **Trigger phrases**: "validate rules", "check cross-rules", "lint .ai/rules",
 "audit rules", "are my rules stale"
 
-Check each of the following categories and collect findings:
+Check all categories below and collect findings before printing the report. Do not stop at the first error.
 
-- **Orphaned sidecars** (error): `.ai/rules/*.yml` files with no matching `.md` file.
-- **Sidecar-less rules** (warning): `.ai/rules/*.md` files with no matching `.yml` — they will be treated as always-on.
-- **Invalid YAML** (error): any `.yml` sidecar that fails to parse; show the parse error and file path.
-- **Stale generated files** (warning): `.cursor/rules/*.mdc` or `.github/instructions/*.md` whose content does not match what the build script would produce from the current source; list each stale file and suggest running the build script.
-- **Stale import blocks** (warning): `CLAUDE.md` or `AGENTS.md` managed blocks that are missing rules present in `.ai/rules/` or reference paths that no longer exist.
+| Severity | Check | Description |
+|---|---|---|
+| error | Orphaned sidecars | `.ai/rules/*.yml` with no matching `.md` |
+| error | Invalid YAML | `.yml` sidecar that fails to parse; show path and error |
+| error | Master root too long | `CLAUDE.md` or `AGENTS.md` exceeds 350 lines |
+| warning | Master root approaching limit | `CLAUDE.md` or `AGENTS.md` exceeds 200 lines |
+| warning | Multiple rule files | More than one `.ai/rules/*.md` — prefer consolidating into `root.md` or skills |
+| warning | Sidecar-less rules | `.ai/rules/*.md` with no matching `.yml` — treated as always-on |
+| warning | Stale generated files | `.cursor/rules/*.mdc` or `.github/instructions/*.md` out of sync with source — re-run build script |
+| warning | Stale import blocks | Managed block missing rules present in `.ai/rules/` or referencing non-existent paths |
+| warning | Code style in rules | Rule body contains `eslint`, `prettier`, `biome`, `ruff`, or style-guide prose — move to config files |
+| warning | Conditional content | Rule body contains "if … then …" patterns — context-specific content belongs in a skill |
+| warning | Hardcoded file paths | Rule body references specific paths (e.g. `src/api/`) — staleness risk; prefer capability descriptions |
+| warning | Missing master root sections | `CLAUDE.md` / `AGENTS.md` missing one or more of the 7 recommended sections |
 
-Print a structured report, one line per finding:
+Print one line per finding, with line counts for `CLAUDE.md` / `AGENTS.md`:
 
 ```
-✓  api-conventions      .ai/rules/api-conventions.md + .yml OK; generated files current
-⚠  auth-tokens          no .yml sidecar — treated as always-on
-✗  legacy.yml           orphaned sidecar — no matching .ai/rules/legacy.md
-⚠  CLAUDE.md            import block missing: testing-policy
+✓  CLAUDE.md             152 lines — within budget
+⚠  AGENTS.md             224 lines — approaching 200-line preference
+✗  CLAUDE.md             378 lines — exceeds 350-line hard limit
+⚠  (rules)               3 rule files — prefer consolidating
+⚠  api-conventions       contains eslint prose — move to .eslintrc
+✗  legacy.yml            orphaned sidecar — no matching .ai/rules/legacy.md
+⚠  CLAUDE.md             import block missing: testing-policy
 ```
+
+End with a summary: `Validation complete: N errors, N warnings — run build script to fix stale files`
 
 ---
 
@@ -165,30 +263,31 @@ This mode runs in two phases. **Do not begin Phase 2 until the user explicitly a
 #### Phase 1 — Discover & Plan
 
 1. Scan the project for existing rules in all known harness formats:
-   - `CLAUDE.md` / `AGENTS.md` — lines that are `@file` imports or fenced rule blocks between known headings
+   - `CLAUDE.md` / `AGENTS.md` — inline content and `@file` imports
    - `.cursor/rules/*.mdc` — extract content below the frontmatter block
    - `.github/instructions/*.md` — extract content below the frontmatter block (if any)
    - `.aider.conf.yml` — extract any `conventions` or `read` entries pointing to rule files
-2. Deduplicate: if two sources contain identical or near-identical content, treat them as the same rule and note all originating sources.
-3. Propose a slug for each discovered rule (kebab-case, derived from the heading or filename).
-4. Propose `.yml` sidecar values by reverse-engineering any globs or `applyTo` values found in the source frontmatter.
-5. Identify which files currently own content that will move to `.ai/rules/` and will instead gain managed imports blocks.
+2. Deduplicate: if two sources contain identical or near-identical content, treat them as the same rule.
+3. Propose a slug for each discovered rule (kebab-case).
+4. **Apply the Rules vs Skills gate** to each discovered item — classify each as:
+   - `root.md` — short, always-on, declarative context
+   - `rule file` — always-on but genuinely separate concern
+   - `→ skill` — procedural, multi-step, context-specific, or code style
+5. Propose `.yml` sidecar values by reverse-engineering globs / `applyTo` from source frontmatter.
 
 Present the migration plan in this format:
 
 ```
-Migration plan — 4 rules found
+Migration plan — 4 items found
 
-Rule              Slug              Source(s)                        Always-on  Cursor globs
-─────────────────────────────────────────────────────────────────────────────────────────────
-API Conventions   api-conventions   .cursor/rules/api.mdc            no         src/api/**
-Auth Tokens       auth-tokens       CLAUDE.md (inline), Copilot      yes        —
-Testing Policy    testing-policy    .github/instructions/testing.md  no         **/*.test.ts
-Commit Messages   commit-messages   AGENTS.md (@file ref)            yes        —
+Rule              Slug              Source(s)                        Destination    Cursor globs
+────────────────────────────────────────────────────────────────────────────────────────────────
+Project Context   root              CLAUDE.md (inline)               root.md        —
+Auth Tokens       auth-tokens       CLAUDE.md (inline), Copilot      root.md        —
+Testing Policy    testing-policy    .github/instructions/testing.md  → skill        **/*.test.ts
+API Conventions   api-conventions   .cursor/rules/api.mdc            rule file      src/api/**
 
-Files that will gain managed imports blocks: CLAUDE.md, AGENTS.md
-Files whose content will move (not be deleted): .cursor/rules/ and .github/instructions/ are owned
-by the build script — run it after migration to regenerate them from the new source files.
+Items marked "→ skill" will NOT be created as rules — offer to delegate those to cross-skills.
 
 Proceed with migration? (yes / no / edit plan)
 ```
@@ -197,15 +296,16 @@ Proceed with migration? (yes / no / edit plan)
 
 #### Phase 2 — Execute (only after approval)
 
-6. For each rule in the approved plan:
-   a. Create `.ai/rules/<slug>.md` with the rule content extracted verbatim from the primary source.
-   b. Create `.ai/rules/<slug>.yml` with the proposed sidecar values.
-7. Insert or update the managed imports block in `CLAUDE.md` and `AGENTS.md` to reference all migrated rules.
-8. Do **not** modify or delete `.cursor/rules/` or `.github/instructions/` files — those will be regenerated by the build script.
-9. Print a compact summary of files created and files updated.
-10. Remind the user to:
-    - Review each `.ai/rules/*.md` file to confirm content was extracted correctly
-    - Run the build script to regenerate `.cursor/rules/` and `.github/instructions/` from the new source files
+6. For each item classified as `root.md` or `rule file`:
+   a. `root.md` items: consolidate content into `.ai/rules/root.md` (create if needed).
+   b. `rule file` items: create `.ai/rules/<slug>.md` and `.ai/rules/<slug>.yml`.
+7. For items classified as `→ skill`: do **not** create rule files — offer to delegate to `cross-skills` after migration completes.
+8. Do **not** touch `CLAUDE.md`, `AGENTS.md`, `.cursor/rules/`, or `.github/instructions/` — the build script handles all of those.
+9. Run the build script.
+10. Print a compact summary of files created.
+11. Remind the user to:
+    - Review `.ai/rules/root.md` and any new rule files to confirm content was extracted correctly
+    - Follow up with `cross-skills` for any items marked `→ skill`
     - Commit all changes together
 
 ---
@@ -224,9 +324,33 @@ Proceed with migration? (yes / no / edit plan)
 
 ---
 
+## Anti-Patterns
+
+### Anti-Pattern: Dumping code style into rules
+**Novice**: "I'll add our ESLint and Prettier rules to the master root so the agent always follows our style."
+**Expert**: Code style lives in config files (`.eslintrc`, `biome.json`, `ruff.toml`, etc.). Duplicating it in prose causes drift — the config is the authoritative source, and the agent can read it directly. Style rules in markdown also become stale the moment the config changes, and they bloat the always-loaded context with content only relevant when writing code.
+**Timeline**: Pre-linter era: style guides in prose were the only option. Post-linter (2013+): config files are authoritative. LLMs can read config files directly — no need to re-encode them in markdown.
+**LLM mistake**: Models optimize for "the agent should know X" and reach for the nearest writable file (the master root). They don't model the downstream cost: every token in the master root loads on every request regardless of relevance.
+**Detection**: Rule body contains `eslint-disable`, `prettier`, `biome`, `ruff`, tab-size or quote-style directives, or multi-paragraph prose about naming conventions.
+
+### Anti-Pattern: Context-specific knowledge in always-on rules
+**Novice**: "I'll add our GraphQL resolver patterns to the master root so the agent knows them."
+**Expert**: Always-on rules load on every session — including sessions that have nothing to do with GraphQL. Context-specific knowledge (file-type conventions, domain patterns, deployment procedures) belongs in a glob-scoped skill that the agent loads only when working in the relevant context. Loading it always wastes the instruction budget and can cause the agent to apply irrelevant constraints.
+**Timeline**: Before agent skills existed: CLAUDE.md was the only place to put guidance. Post-skills: glob-scoped skills let you scope knowledge precisely to the context where it's needed.
+**LLM mistake**: Models trained on monolithic config files default to "put everything in one place." They optimize for completeness at the point of writing and don't model the instruction-budget cost at inference time.
+**Detection**: Rule body includes conditional language ("when working on the API…", "for TypeScript files…") or covers a domain that only applies to a subset of the codebase.
+
+### Anti-Pattern: Rule proliferation (many small rule files)
+**Novice**: "I'll create a separate rule for commits, one for testing, one for API conventions, one for error handling…"
+**Expert**: Every `.ai/rules/*.md` file loads on every session. Ten small rule files cost ten times more context than one consolidated `root.md`. The threshold for a separate file is high: the content must be genuinely distinct, always-applicable, and too long to fit in `root.md`. In most cases, consolidating into `root.md` or moving procedural content to skills reduces the always-loaded footprint dramatically.
+**Timeline**: Early harness configs had no include mechanism — many files were the only option. Once `@file` imports and skills arrived, a single well-structured root + on-demand skills became the better architecture.
+**LLM mistake**: Models pattern-match on "one concern per file" from software engineering principles and apply it to agent config files without modelling the runtime cost. Separation of concerns is valuable in code; in always-loaded config it is an anti-pattern unless the concerns are truly independent and equally universal.
+**Detection**: More than two `.ai/rules/*.md` files; `validate` mode reports "multiple rule files" warning.
+
+---
+
 ## Error Handling
 
 - If `.ai/rules/` does not exist and mode is not `init` or `migrate`: stop and suggest running `init` first.
 - If a `.yml` sidecar contains invalid YAML: show the parse error and the file path; do not proceed with the affected rule.
-- If `CLAUDE.md` or `AGENTS.md` exists but has no managed imports block and mode is `add`: ask before inserting the block.
-- If the user asks the skill to directly write `.cursor/rules/` or `.github/instructions/` files: decline and explain that those files are owned by the build script; offer to run `make-script` instead.
+- If the user asks the skill to directly write `CLAUDE.md`, `AGENTS.md`, `.cursor/rules/`, or `.github/instructions/`: decline, explain the Hard Restriction, identify the corresponding `.ai/rules/` source file, and offer to edit that instead.
