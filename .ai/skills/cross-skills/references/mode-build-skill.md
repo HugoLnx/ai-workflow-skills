@@ -42,9 +42,9 @@
    Created .ai/skills/<name>/frontmatter/codex.yaml
    Created .ai/skills/<name>/frontmatter/cursor.yaml
    Created .ai/skills/<name>/frontmatter/copilot.yaml
-   Created .ai/build-skills.ps1
+   Created .ai/skills/<name>/scripts/build-skills.py
 
-   Run: powershell -ExecutionPolicy Bypass -File .ai/build-skills.ps1
+   Run: python .ai/skills/cross-skills/scripts/build-skills.py
    ```
 
    Remind the user to commit the build script and add it to their CI pipeline so generated files stay in sync.

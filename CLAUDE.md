@@ -7,12 +7,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 After editing any skill source file, regenerate harness output:
 
 ```bash
-# Linux/macOS
-bash .ai/build-skills.sh
-
-# Windows (requires Developer Mode for symlinks)
-powershell -ExecutionPolicy Bypass -File .ai/build-skills.ps1
+python .ai/skills/cross-skills/scripts/build-skills.py
 ```
+
+Requires Python 3.9+. Works on Linux, macOS, and Windows (symlinks on Windows require Developer Mode or Administrator privileges).
 
 The build script is idempotent — safe to run multiple times. It prints a summary of SKILL.md files written and symlinks created/verified. A non-zero exit means at least one error (listed above the summary).
 

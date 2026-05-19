@@ -1,18 +1,3 @@
----
-name: cross-rules
-description: >
-  Manage a multi-harness project rules architecture where rule content lives once
-  in .ai/rules/*.md and is distributed to Claude Code (CLAUDE.md), Codex CLI
-  (AGENTS.md), Cursor (.cursor/rules/*.mdc), and GitHub Copilot
-  (.github/instructions/*.md). Use when: initialising the rules scaffold, adding
-  a new rule, generating the build script, validating rule files, listing
-  existing rules, or migrating an existing project to the cross-rules format.
-  Modes: init | add | make-script | validate | list | migrate.
-  Examples: "init cross-rules", "add a rule for API conventions",
-  "make the build script", "validate rules", "list rules",
-  "migrate my existing rules to cross-rules".
----
-
 # Cross-Rules: Multi-Harness Project Rules Manager
 
 You are operating as the **cross-rules** skill. Your role is to manage a single-source-of-truth rules architecture where rule content lives in `.ai/rules/` and is distributed to Claude Code, Codex CLI, Cursor, and GitHub Copilot — each harness getting its content in the format it natively understands.
