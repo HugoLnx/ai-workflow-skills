@@ -19,7 +19,7 @@
 
 2. **Create the full `.ai/skills/<name>/` folder**:
    - `content.md` — see `references/mode-generate.md` for structure requirements
-   - All four `.yaml` files — consult `references/harness-frontmatter.md` for fields
+   - All four `.yaml` files inside `frontmatter/` — consult `references/harness-frontmatter.md` for fields
 
 3. **Generate the build script** implementing the algorithm from `references/build-algorithm.md`:
    - Enumerate `.ai/skills/` subdirectories
@@ -38,10 +38,10 @@
 
    ```
    Created .ai/skills/<name>/content.md
-   Created .ai/skills/<name>/claude.yaml
-   Created .ai/skills/<name>/codex.yaml
-   Created .ai/skills/<name>/cursor.yaml
-   Created .ai/skills/<name>/copilot.yaml
+   Created .ai/skills/<name>/frontmatter/claude.yaml
+   Created .ai/skills/<name>/frontmatter/codex.yaml
+   Created .ai/skills/<name>/frontmatter/cursor.yaml
+   Created .ai/skills/<name>/frontmatter/copilot.yaml
    Created .ai/build-skills.ps1
 
    Run: powershell -ExecutionPolicy Bypass -File .ai/build-skills.ps1

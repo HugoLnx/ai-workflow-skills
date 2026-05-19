@@ -24,15 +24,16 @@ All skills are authored under `.ai/skills/<skill-name>/`. This is the canonical 
 ```
 .ai/skills/<skill-name>/
   content.md        # Skill body — NO frontmatter, pure instructional markdown
-  claude.yaml       # Frontmatter for Claude Code
-  codex.yaml        # Frontmatter for OpenAI Codex CLI
-  cursor.yaml       # Frontmatter for Cursor
-  copilot.yaml      # Frontmatter for GitHub Copilot
+  frontmatter/
+    claude.yaml     # Frontmatter for Claude Code
+    codex.yaml      # Frontmatter for OpenAI Codex CLI
+    cursor.yaml     # Frontmatter for Cursor
+    copilot.yaml    # Frontmatter for GitHub Copilot
   references/       # Optional supporting files (symlinked into harness folders)
   scripts/          # Optional helper scripts (symlinked into harness folders)
 ```
 
-Each harness `SKILL.md` contains **only** the YAML frontmatter for that harness followed by `@content.md` — it never duplicates the body. All child files and folders (excluding `.yaml` files) are **symlinked** — not copied — into each harness skill folder at the same relative path.
+Each harness `SKILL.md` contains **only** the YAML frontmatter for that harness followed by `@content.md` — it never duplicates the body. All child files and folders (excluding `frontmatter/`) are **symlinked** — not copied — into each harness skill folder at the same relative path.
 
 ---
 

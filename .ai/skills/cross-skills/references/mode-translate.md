@@ -29,7 +29,7 @@
    - `alwaysApply: true` (Cursor) → implies global scope → `applyTo: "**"` (Copilot)
    - `tools` (Codex) → map to closest `allowed-tools` equivalents (Claude)
 
-4. **Write the translated `.yaml` files** into `.ai/skills/<name>/` (ask the user for the name if not clear from context).
+4. **Write the translated `.yaml` files** into `.ai/skills/<name>/frontmatter/` (ask the user for the name if not clear from context).
 
 5. **Check for `content.md`**:
    - If `.ai/skills/<name>/content.md` already exists: leave it unchanged.

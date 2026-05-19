@@ -31,10 +31,10 @@ For each subdirectory <name> in .ai/skills/:
         If a non-symlink file exists at that path: print error, skip
 
      d. For every other file or subfolder inside .ai/skills/<name>/
-        (excluding .yaml files and content.md):
+        (excluding frontmatter/ and content.md):
           Create or verify symlink at the same relative path inside <target>/
 
-     e. Read <harness>.yaml
+     e. Read frontmatter/<harness>.yaml
         → Fail loudly and skip this harness if the file is missing
 
      f. Build SKILL.md content:
@@ -82,7 +82,7 @@ for skill_dir in "$SKILLS_SRC"/*/; do
   [ -f "$content_src" ] || { echo "ERROR: $content_src missing"; continue; }
 
   for harness in claude codex cursor copilot; do
-    yaml_src="$skill_dir/${harness}.yaml"
+    yaml_src="$skill_dir/frontmatter/${harness}.yaml"
     [ -f "$yaml_src" ] || { echo "ERROR: $yaml_src missing"; continue; }
 
     target_base="$REPO_ROOT/${HARNESS_DIRS[$harness]}/$skill_name"
@@ -93,7 +93,7 @@ for skill_dir in "$SKILLS_SRC"/*/; do
 
     for item in "$skill_dir"/*; do
       item_name="$(basename "$item")"
-      case "$item_name" in *.yaml|content.md) continue ;; esac
+      case "$item_name" in frontmatter|content.md) continue ;; esac
       ln -sf "$(realpath --relative-to="$target_base" "$item")" "$target_base/$item_name"
     done
 
@@ -133,7 +133,7 @@ for (const name of readdirSync(src)) {
   if (!existsSync(contentSrc)) { console.error(`ERROR: ${contentSrc} missing`); continue }
 
   for (const [harness, dir] of Object.entries(harnesses)) {
-    const yamlSrc = join(skillDir, `${harness}.yaml`)
+    const yamlSrc = join(skillDir, 'frontmatter', `${harness}.yaml`)
     if (!existsSync(yamlSrc)) { console.error(`ERROR: ${yamlSrc} missing`); continue }
 
     const target = join(root, dir, name)
@@ -143,7 +143,7 @@ for (const name of readdirSync(src)) {
     symlinkSync(relContent, join(target, 'content.md'))
 
     for (const item of readdirSync(skillDir)) {
-      if (item.endsWith('.yaml') || item === 'content.md') continue
+      if (item === 'frontmatter' || item === 'content.md') continue
       symlinkSync(relative(target, join(skillDir, item)), join(target, item))
     }
 

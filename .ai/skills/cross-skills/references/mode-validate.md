@@ -13,7 +13,7 @@ Run all checks and collect findings before printing the report. Do not stop at t
 | Severity | Check | Description |
 |---|---|---|
 | error | Missing `content.md` | `.ai/skills/<name>/` directory exists but no `content.md` |
-| error | Missing `.yaml` file | Any of `claude.yaml`, `codex.yaml`, `cursor.yaml`, `copilot.yaml` absent from `.ai/skills/<name>/` |
+| error | Missing `.yaml` file | Any of `claude.yaml`, `codex.yaml`, `cursor.yaml`, `copilot.yaml` absent from `.ai/skills/<name>/frontmatter/` |
 | error | Broken symlink | Harness `content.md` symlink missing or pointing to a non-existent target |
 | error | Duplicated inline content | `SKILL.md` in a harness folder contains the full skill body instead of `@content.md` — no-duplication violation |
 | error | Missing required frontmatter field | Required fields absent per harness (consult `references/harness-frontmatter.md`) |

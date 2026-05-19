@@ -25,10 +25,11 @@ All skill content lives under `.ai/skills/<skill-name>/`:
 ```
 .ai/skills/<name>/
   content.md        # Skill body — pure markdown, no frontmatter
-  claude.yaml       # Frontmatter for Claude Code
-  codex.yaml        # Frontmatter for OpenAI Codex CLI
-  cursor.yaml       # Frontmatter for Cursor
-  copilot.yaml      # Frontmatter for GitHub Copilot
+  frontmatter/
+    claude.yaml     # Frontmatter for Claude Code
+    codex.yaml      # Frontmatter for OpenAI Codex CLI
+    cursor.yaml     # Frontmatter for Cursor
+    copilot.yaml    # Frontmatter for GitHub Copilot
   references/       # Progressive-disclosure reference files (symlinked, not copied)
   scripts/          # Helper scripts (symlinked, not copied)
 ```
@@ -42,7 +43,7 @@ The build script creates one output folder per skill per harness:
 | Cursor | `.cursor/skills/<name>/` |
 | GitHub Copilot | `.github/skills/<name>/` |
 
-Each output `SKILL.md` contains only the YAML frontmatter (from `<harness>.yaml`) followed by `@content.md`. The `content.md` file and all non-`.yaml` files/folders are **symlinked** (never copied) to avoid drift.
+Each output `SKILL.md` contains only the YAML frontmatter (from `frontmatter/<harness>.yaml`) followed by `@content.md`. The `content.md` file and all files/folders other than `frontmatter/` are **symlinked** (never copied) to avoid drift.
 
 ### Harness frontmatter fields
 
