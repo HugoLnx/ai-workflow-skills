@@ -92,7 +92,7 @@ Copy this block for each anti-pattern (minimum 3 per skill):
 **Expert**: `.cursor/rules/`, `.github/instructions/`, `CLAUDE.md`, and `AGENTS.md` are project-level configs managed outside this skill's scope. This skill writes exclusively to `.ai/` source files. Mixing the two layers corrupts project config and may override manually maintained rules.
 **Timeline**: 2023 (early harness designs): no separate skills folder, everything in project-level config → 2024+: dedicated `skills/` folders introduced, creating a clear layer separation.
 **LLM mistake**: Models conflate "harness config" with "harness skills" because files look similar (YAML frontmatter + markdown).
-**Detection**: Any `Write` or `Edit` call targeting a path outside `.ai/skills/` or `.ai/rules/` is a scope violation.
+**Detection**: Any `Write` or `Edit` call targeting a path outside `.ai/skills/` or `.ai/project-context.md` is a scope violation.
 
 ### Anti-Pattern: Mixing frontmatter fields across harnesses
 **Novice**: "I'll add `allowed-tools` to `cursor.yaml` since Claude uses it — extra fields shouldn't hurt."

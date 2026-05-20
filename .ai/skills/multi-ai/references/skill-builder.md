@@ -109,7 +109,7 @@ Get-ChildItem ".claude\skills\<name>" -Force | Where-Object { $_.LinkType -eq 'S
 When no build script exists yet, or the user asks for one in a specific language:
 
 1. Ask which runtime: **Python** (default/cross-OS), Bash (macOS/Linux), Node.js
-2. Ask where to save (default: `.ai/skills/cross-skills/scripts/build-skills.<ext>`)
+2. Ask where to save (default: `.ai/skills/multi-ai/scripts/build-skills.<ext>`)
 3. Generate a self-contained script implementing the algorithm above
 4. Use only the standard library — no third-party packages
 5. Make executable (`chmod +x`) if generating a shell script on Unix
