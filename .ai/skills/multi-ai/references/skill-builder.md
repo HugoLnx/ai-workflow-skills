@@ -6,6 +6,23 @@ How to build skills from `.ai/skills/` to harness output folders, generate build
 
 ---
 
+## Config: `.ai/config.yml`
+
+The build script reads `.ai/config.yml` to determine which harnesses to build for and what output folder to use per harness. If the file is absent, all four harnesses are built with their default output folders.
+
+```yaml
+harnesses:
+  claude:
+    enabled: true
+    # skills_folder_path: .claude/skills   # uncomment to override
+```
+
+- `enabled: false` skips the harness entirely.
+- `skills_folder_path` overrides the default output folder for that harness.
+- Requires `PyYAML` (`pip install pyyaml`).
+
+---
+
 ## Running the Build Script
 
 ```bash

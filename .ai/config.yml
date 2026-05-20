@@ -1,0 +1,23 @@
+# Which harnesses to build for and where their outputs go.
+# All paths are relative to the repository root.
+
+harnesses:
+  claude:
+    enabled: true
+    # skills_folder_path: .claude/skills
+    # project_context_file_path: CLAUDE.md
+
+  codex:
+    enabled: true
+    # skills_folder_path: .agents/skills
+    # project_context_file_path: AGENTS.md
+
+  cursor:
+    enabled: true
+    # skills_folder_path: .cursor/skills
+    # project_context_file_path: .cursorrules
+
+  copilot:
+    enabled: true
+    # skills_folder_path: .github/skills
+    # project_context_file_path: .github/copilot-instructions.md

@@ -4,6 +4,23 @@ How to build and distribute `.ai/project-context.md` to all harnesses via symlin
 
 ---
 
+## Config: `.ai/config.yml`
+
+The build script reads `.ai/config.yml` to determine which harnesses to symlink and what target filepath to use per harness. If the file is absent, all four harnesses are symlinked at their default paths.
+
+```yaml
+harnesses:
+  claude:
+    enabled: true
+    # project_context_file_path: CLAUDE.md   # uncomment to override
+```
+
+- `enabled: false` skips the harness entirely.
+- `project_context_file_path` overrides the default symlink path for that harness.
+- Requires `PyYAML` (`pip install pyyaml`).
+
+---
+
 ## Distribution Model
 
 `.ai/project-context.md` is distributed by creating symlinks from four harness-specific paths to the single source file. All symlinks use relative paths so the repository is portable.

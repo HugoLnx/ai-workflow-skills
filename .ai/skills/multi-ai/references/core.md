@@ -6,7 +6,7 @@ Always load this reference. It defines where things live and what they mean.
 
 ## Hard Restriction
 
-The agent writes **only** to `.ai/` source files. The build scripts are the sole writers of harness output.
+The agent writes **only** to `.ai/` source files. The build scripts are the sole writers of harness output. Active harnesses and output paths are configured in `.ai/config.yml` — edit it to enable, disable, or relocate harness output.
 
 Never write to `CLAUDE.md`, `AGENTS.md`, `.cursorrules`, `.github/copilot-instructions.md`, `.claude/skills/`, `.agents/skills/`, `.cursor/skills/`, or `.github/skills/` directly. If you catch yourself about to do so, stop and consult `multi-ai-wall`.
 

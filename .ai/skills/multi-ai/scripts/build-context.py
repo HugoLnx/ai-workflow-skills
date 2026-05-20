@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
-"""build-context.py — symlink harness files to .ai/project-context.md"""
+"""build-context.py — symlink harness files to .ai/project-context.md
+
+Active harnesses and target paths are read from .ai/config.yml.
+"""
 from pathlib import Path
 import os, sys
 
-REPO_ROOT = Path(__file__).resolve().parents[4]
+SCRIPT_PATH = Path(__file__).resolve()
+REPO_ROOT = SCRIPT_PATH.parents[4]
+
+sys.path.insert(0, str(SCRIPT_PATH.parent))
+from config import load_config
+
 CONTEXT_SRC = REPO_ROOT / ".ai" / "project-context.md"
-SYMLINKS = [
-    REPO_ROOT / "CLAUDE.md",
-    REPO_ROOT / "AGENTS.md",
-    REPO_ROOT / ".cursorrules",
-    REPO_ROOT / ".github" / "copilot-instructions.md",
-]
+
+_harness_config = load_config(REPO_ROOT)
+SYMLINKS = [REPO_ROOT / cfg["project_context_file_path"] for cfg in _harness_config.values()]
 
 if not CONTEXT_SRC.exists():
     print(f"ERROR: {CONTEXT_SRC} does not exist.", file=sys.stderr)

@@ -2,7 +2,7 @@
 """Build all harness SKILL.md files from .ai/skills/ source of truth.
 
 Idempotent: safe to run multiple times.
-Writes only to: .claude/skills/  .agents/skills/  .cursor/skills/  .github/skills/
+Active harnesses and output paths are read from .ai/config.yml.
 """
 
 import os
@@ -13,12 +13,11 @@ SCRIPT_PATH = Path(__file__).resolve()
 REPO_ROOT = SCRIPT_PATH.parents[4]
 SKILLS_SRC = REPO_ROOT / ".ai" / "skills"
 
-HARNESSES = {
-    "claude":  ".claude/skills",
-    "codex":   ".agents/skills",
-    "cursor":  ".cursor/skills",
-    "copilot": ".github/skills",
-}
+sys.path.insert(0, str(SCRIPT_PATH.parent))
+from config import load_config
+
+_harness_config = load_config(REPO_ROOT)
+HARNESSES = {name: cfg["skills_folder_path"] for name, cfg in _harness_config.items()}
 
 skills_processed = 0
 skill_mds_written = 0

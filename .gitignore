@@ -3,3 +3,11 @@
 .agents/skills/
 .github/skills/
 .cursor/skills/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+.env
