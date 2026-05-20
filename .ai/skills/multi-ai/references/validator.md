@@ -4,6 +4,20 @@ Validates that the project structure matches the multi-ai architecture. Run all 
 
 ---
 
+## Project-Context Checks
+
+| Severity | Check | Description |
+|---|---|---|
+| error | Missing `project-context.md` | `.ai/project-context.md` does not exist |
+| error | Harness file not a symlink | `CLAUDE.md`, `AGENTS.md`, `.cursorrules`, or `.github/copilot-instructions.md` exists but is a regular file instead of a symlink |
+| error | Symlink wrong target | Any of the four harness symlinks does not point to `.ai/project-context.md` |
+| error | Forbidden folder exists | `.ai/rules/`, `.cursor/rules/`, or `.github/instructions/` directory exists |
+| warning | Harness symlink missing | Any of the four harness symlinks does not exist — run `build-context.py` |
+| warning | Project context approaching limit | `.ai/project-context.md` exceeds 200 lines |
+| error | Project context too long | `.ai/project-context.md` exceeds 350 lines |
+
+---
+
 ## Skill Structure Checks
 
 | Severity | Check | Description |
@@ -19,43 +33,26 @@ Validates that the project structure matches the multi-ai architecture. Run all 
 
 ---
 
-## Rules Structure Checks
-
-| Severity | Check | Description |
-|---|---|---|
-| error | Orphaned sidecar | `.ai/rules/*.yml` with no matching `.md` |
-| error | Invalid YAML | `.yml` sidecar fails to parse; show path and error |
-| error | Master root too long | `CLAUDE.md` or `AGENTS.md` exceeds 350 lines |
-| warning | Master root approaching limit | `CLAUDE.md` or `AGENTS.md` exceeds 200 lines |
-| warning | Multiple rule files | More than one `.ai/rules/*.md` — prefer consolidating |
-| warning | Sidecar-less rules | `.ai/rules/*.md` with no matching `.yml` — treated as always-on |
-| warning | Stale generated files | `.cursor/rules/*.mdc` or `.github/instructions/*.md` out of sync with source |
-| warning | Stale import blocks | Managed block missing rules present in `.ai/rules/` or referencing non-existent paths |
-| warning | Code style in rules | Rule body contains `eslint`, `prettier`, `biome`, `ruff`, or style-guide prose |
-| warning | Conditional content | Rule body contains "if … then …" patterns — context-specific content belongs in a skill |
-
----
-
 ## Report Format
 
 Print one line per finding:
 
 ```
-✓  my-skill      claude    SKILL.md OK, symlink OK
-✓  my-skill      codex     SKILL.md OK, symlink OK
-✗  my-skill      cursor    SKILL.md contains inline body — no-duplication violation
-⚠  my-skill      copilot   SKILL.md frontmatter stale — re-run build script
-✗  other-skill   claude    content.md symlink broken → .ai/skills/other-skill/content.md not found
-✗  bad-skill     (source)  content.md missing in .ai/skills/bad-skill/
-✓  CLAUDE.md               152 lines — within budget
-⚠  AGENTS.md               224 lines — approaching 200-line preference
-✗  legacy.yml   (rules)    orphaned sidecar — no matching .ai/rules/legacy.md
+✓  CLAUDE.md              symlink → .ai/project-context.md
+✓  AGENTS.md              symlink → .ai/project-context.md
+✓  .cursorrules           symlink → .ai/project-context.md
+✗  .github/copilot-instructions.md  missing — run build-context.py
+✓  project-context.md     42 lines — within budget
+✗  .ai/rules/             forbidden folder exists — delete it
+✓  my-skill    claude      SKILL.md OK, symlink OK
+✗  my-skill    cursor      SKILL.md contains inline body — no-duplication violation
+⚠  my-skill    copilot     SKILL.md frontmatter stale — re-run build script
 ```
 
 End with a summary line:
 
 ```
-Validation complete: N errors, N warnings — run build script to fix stale files
+Validation complete: N errors, N warnings — run build scripts to fix
 ```
 
-Return an error signal if any errors were found (non-zero exit or explicit error indicator).
+Return an error signal if any errors were found.

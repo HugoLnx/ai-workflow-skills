@@ -3,9 +3,9 @@
 Use this reference when initializing a project in the multi-ai format from scratch, or when setting it up for the first time in a repo that may have existing agent configuration.
 
 **Also read**:
-- `references/planner.md` — always; provides the Rules vs Skills gate and plan generation
+- `references/planner.md` — always; provides the Project-Context vs Skills gate and plan generation
 - `references/skills-migration-planner.md` — if existing harness skill configurations are found
-- `references/rules-migration-planner.md` — if existing harness rule configurations are found
+- `references/project-context-migration-planner.md` — if existing harness context files are found
 
 ---
 
@@ -13,13 +13,15 @@ Use this reference when initializing a project in the multi-ai format from scrat
 
 ```mermaid
 flowchart TD
-  Start[Start init] --> ScanSkills{Harness skill folders\nexist and non-empty?}
+  Start[Start init] --> CheckProjCtx{.ai/project-context.md\nalready exists?}
+  CheckProjCtx -->|Yes| Validate[Suggest running validator\ninstead of init]
+  CheckProjCtx -->|No| ScanSkills{Harness skill folders\nexist and non-empty?}
   ScanSkills -->|Yes| MigrateSkills[Use skills-migration-planner\nto plan skill migration]
-  ScanSkills -->|No| ScanRules{Harness rule files\nexist?}
-  MigrateSkills --> ScanRules
-  ScanRules -->|Yes| MigrateRules[Use rules-migration-planner\nto plan rules migration]
-  ScanRules -->|No| FreshSetup[Fresh setup:\nscaffold root.md\nand first skill]
-  MigrateRules --> Coordinate[Coordinate plan\nwith planner]
+  ScanSkills -->|No| ScanContext{CLAUDE.md or other\ncontext files exist?}
+  MigrateSkills --> ScanContext
+  ScanContext -->|Yes| MigrateContext[Use project-context-migration-planner\nto plan context migration]
+  ScanContext -->|No| FreshSetup[Fresh setup:\nscaffold project-context.md]
+  MigrateContext --> Coordinate[Coordinate full plan\nwith planner]
   FreshSetup --> Coordinate
 ```
 
@@ -27,12 +29,11 @@ flowchart TD
 
 | Location | What it indicates |
 |---|---|
+| `.ai/project-context.md` | Already in multi-ai format — validate instead |
 | `.claude/skills/`, `.agents/skills/`, `.cursor/skills/`, `.github/skills/` | Existing harness skills to migrate |
-| `CLAUDE.md`, `AGENTS.md` | Master root content to migrate to `.ai/rules/root.md` |
-| `.cursor/rules/*.mdc`, `.github/instructions/*.md` | Harness-specific rules to migrate |
-| `.ai/skills/`, `.ai/rules/` | Already in multi-ai format — validate instead of init |
-
-If `.ai/skills/` or `.ai/rules/` already exist: stop and suggest running the `validator` instead.
+| `CLAUDE.md`, `AGENTS.md` (non-symlink) | Context content to migrate to `.ai/project-context.md` |
+| `.cursorrules`, `.github/copilot-instructions.md` | Context content to migrate |
+| `.cursor/rules/*.mdc`, `.github/instructions/*.md` | Context content to migrate (and then delete those folders) |
 
 ---
 
@@ -40,7 +41,7 @@ If `.ai/skills/` or `.ai/rules/` already exist: stop and suggest running the `va
 
 If no existing harness configuration is found:
 
-1. Ask the user for each of the 7 master root sections (allow "skip / fill later" for any):
+1. Ask the user for each of the 7 project-context sections (allow "skip / fill later" for any):
    - Project name + one-sentence description
    - Tech Stack
    - Architecture
@@ -49,15 +50,16 @@ If no existing harness configuration is found:
    - MCPs (if any)
    - Core Skills (if any)
 
-2. Create `.ai/rules/root.md` with the populated content
+2. Write `.ai/project-context.md` with the populated content
 
-3. Ask which runtime they prefer for the rules build script: Python, Node.js, Ruby, or shell — then coordinate with `rules-builder` to generate it
+3. Run the build script to create symlinks:
+   ```bash
+   python .ai/skills/multi-ai/scripts/build-context.py
+   ```
 
-4. Ask whether they want to create an initial skill now — if yes, coordinate with `planner` to design it and `skill-builder` to generate the build script
+4. Ask whether they want to create an initial skill now — if yes, coordinate with `planner` and `skill-builder`
 
-5. Run the build script(s)
-
-6. Print a summary of all files created and next steps
+5. Print a summary of all files created and next steps
 
 ---
 
@@ -68,14 +70,14 @@ Whether fresh or migrating, produce a consolidated plan before executing:
 ```
 Init plan for <project>
 
-Phase 1 — Rules migration (N items)
-  [table from rules-migration-planner if applicable]
+Phase 1 — Context migration (N items)
+  [table from project-context-migration-planner if applicable]
 
 Phase 2 — Skills migration (N skills)
   [table from skills-migration-planner if applicable]
 
 Phase 3 — Fresh content
-  Create .ai/rules/root.md with: <sections listed>
+  Create .ai/project-context.md with: <sections listed>
   Create .ai/skills/<name>/ for: <skill listed>
 
 Proceed? (yes / no / edit plan)

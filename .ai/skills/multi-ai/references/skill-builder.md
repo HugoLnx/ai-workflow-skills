@@ -6,7 +6,7 @@ How to build skills from `.ai/skills/` to harness output folders, generate build
 
 ---
 
-## Running the Existing Build Script
+## Running the Build Script
 
 ```bash
 python .ai/skills/multi-ai/scripts/build-skills.py

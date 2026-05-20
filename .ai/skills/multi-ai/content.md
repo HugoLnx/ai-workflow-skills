@@ -4,8 +4,8 @@ You are the **multi-ai** skill. Your role is to manage AI assistant configuratio
 
 ## When to Use ✅
 
-- Editing or creating files under `.ai/skills/` or `.ai/rules/`
-- Designing, reviewing, or planning skills or rules
+- Editing or creating files under `.ai/skills/` or `.ai/project-context.md`
+- Designing, reviewing, or planning skills or project context
 - Building harness output from `.ai/` source files
 - Migrating existing harness configurations to the multi-ai format
 - Initializing a project for the first time in multi-ai format
@@ -14,7 +14,7 @@ You are the **multi-ai** skill. Your role is to manage AI assistant configuratio
 
 ## When NOT to Use ❌
 
-- Writing directly to `CLAUDE.md`, `AGENTS.md`, `.cursor/rules/`, `.cursor/skills/`, `.github/instructions/`, or `.github/skills/` — those are managed outputs; `multi-ai-wall` will intercept these
+- Writing directly to `CLAUDE.md`, `AGENTS.md`, `.cursorrules`, `.github/copilot-instructions.md`, `.cursor/skills/`, `.claude/skills/`, `.agents/skills/`, or `.github/skills/` — those are managed outputs; `multi-ai-wall` will intercept these
 - Translating a skill from one harness format to another (harness-A → harness-B) — not in scope
 - General coding tasks unrelated to AI configuration
 
@@ -32,16 +32,17 @@ References must be loaded explicitly — they are not auto-loaded. Each referenc
 
 | Task | References to load |
 |---|---|
-| Edit or write skill/rule **content** | `core`, `markdown-writer` |
-| Edit or write skill/rule **frontmatter** | `core`, `skill-frontmatter-expert` OR `rules-frontmatter-expert` |
+| Edit or write skill **content** | `core`, `markdown-writer` |
+| Edit or write skill **frontmatter** | `core`, `skill-frontmatter-expert` |
+| Edit **project context** | `core`, `project-context-builder` |
 | **Design or review** a skill | `core`, `planner` → then `skill-design-guidelines` |
-| **Design or review** a rule | `core`, `planner` → then `rules-design-guidelines` |
+| **Design project context** content | `core`, `planner` → then `project-context-design-guidelines` |
 | **Migrate** existing harness skill to `.ai/skills/` | `core`, `skills-migration-planner` → `planner` → `skill-design-guidelines` |
-| **Migrate** existing harness rule to `.ai/rules/` | `core`, `rules-migration-planner` → `planner` → `rules-design-guidelines` |
+| **Migrate** existing context to `.ai/project-context.md` | `core`, `project-context-migration-planner` → `planner` → `project-context-design-guidelines` |
 | **Initialize** project (no existing config) | `core`, `init-planner` → `planner` |
-| **Initialize** project (existing harness config) | `core`, `init-planner` → `planner` + `skills-migration-planner` + `rules-migration-planner` |
+| **Initialize** project (existing config) | `core`, `init-planner` → `planner` + `skills-migration-planner` + `project-context-migration-planner` |
 | **Build** skills to harness output | `core`, `skill-builder` → `skill-frontmatter-expert` |
-| **Build** rules to harness output | `core`, `rules-builder` → `rules-frontmatter-expert` |
+| **Build** project-context symlinks | `core`, `project-context-builder` |
 | **Validate** project structure | `core`, `validator` |
 
 Arrows (`→`) indicate that the left reference will instruct you to also read the right reference when relevant. Load them in order.
@@ -55,15 +56,14 @@ Read only the files relevant to the current task — do not pre-load all referen
 | File | When to load |
 |---|---|
 | `references/core.md` | Always — folder structure and equivalences |
-| `references/planner.md` | Designing or reviewing a skill/rule |
+| `references/planner.md` | Designing or reviewing a skill or project context |
 | `references/skill-design-guidelines.md` | Designing skills (load alongside planner) |
-| `references/rules-design-guidelines.md` | Designing rules (load alongside planner) |
-| `references/markdown-writer.md` | Writing skill or rule content |
+| `references/project-context-design-guidelines.md` | Designing project context (load alongside planner) |
+| `references/markdown-writer.md` | Writing skill or project context content |
 | `references/skill-frontmatter-expert.md` | Writing or validating skill frontmatter |
-| `references/rules-frontmatter-expert.md` | Writing or validating rule frontmatter |
 | `references/skill-builder.md` | Building skills to harness output |
-| `references/rules-builder.md` | Building rules to harness output |
+| `references/project-context-builder.md` | Building project-context symlinks |
 | `references/skills-migration-planner.md` | Migrating existing harness skill configs |
-| `references/rules-migration-planner.md` | Migrating existing harness rule configs |
+| `references/project-context-migration-planner.md` | Migrating existing harness context files |
 | `references/init-planner.md` | Initializing a project in multi-ai format |
 | `references/validator.md` | Validating project structure |

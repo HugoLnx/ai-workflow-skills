@@ -6,9 +6,31 @@ Always load this reference. It defines where things live and what they mean.
 
 ## Hard Restriction
 
-The agent writes **only** to `.ai/` source files. The build script is the sole writer of harness output files.
+The agent writes **only** to `.ai/` source files. The build scripts are the sole writers of harness output.
 
-Never write to `CLAUDE.md`, `AGENTS.md`, `.claude/skills/`, `.agents/skills/`, `.cursor/rules/`, `.cursor/skills/`, `.github/instructions/`, or `.github/skills/` directly. If you catch yourself about to do so, stop and consult `multi-ai-wall`.
+Never write to `CLAUDE.md`, `AGENTS.md`, `.cursorrules`, `.github/copilot-instructions.md`, `.claude/skills/`, `.agents/skills/`, `.cursor/skills/`, or `.github/skills/` directly. If you catch yourself about to do so, stop and consult `multi-ai-wall`.
+
+---
+
+## `.ai/project-context.md` — Project Context Source of Truth
+
+A single markdown file containing always-on project-level context. Distributed to all harnesses via symlinks:
+
+| Symlink | Points to |
+|---|---|
+| `CLAUDE.md` | `.ai/project-context.md` |
+| `AGENTS.md` | `.ai/project-context.md` |
+| `.cursorrules` | `.ai/project-context.md` |
+| `.github/copilot-instructions.md` | `.ai/project-context.md` |
+
+**Equivalence**: `.ai/project-context.md` IS `CLAUDE.md`, `AGENTS.md`, `.cursorrules`, and `.github/copilot-instructions.md` — they are the same file via symlinks. Edit only the source.
+
+**Forbidden**: `.ai/rules/`, `.cursor/rules/`, `.github/instructions/` — these folders must not exist.
+
+Build symlinks with:
+```bash
+python .ai/skills/multi-ai/scripts/build-context.py
+```
 
 ---
 
@@ -40,30 +62,9 @@ Each harness output folder contains:
 - `content.md` — symlink to `.ai/skills/<name>/content.md`
 - All other files/folders — symlinked at the same relative path (never copied)
 
-**Equivalence**: `.ai/skills/<name>/content.md` is the same thing as the harness `SKILL.md` in meaning and purpose — the harness file is just the delivery wrapper.
+**Equivalence**: `.ai/skills/<name>/content.md` is the same thing as the harness `SKILL.md` in meaning and purpose.
 
----
-
-## `.ai/rules/` — Rule Source of Truth
-
+Build all harness skill output with:
+```bash
+python .ai/skills/multi-ai/scripts/build-skills.py
 ```
-.ai/rules/<name>.md   # Rule body — pure markdown, no frontmatter
-.ai/rules/<name>.yml  # Sidecar metadata (optional; controls per-harness behavior)
-```
-
-The build script distributes rule content to each harness:
-
-| Harness | Output |
-|---|---|
-| Claude Code | `CLAUDE.md` — managed imports block (`@file .ai/rules/<name>.md`) |
-| Codex CLI | `AGENTS.md` — same managed imports block |
-| Cursor | `.cursor/rules/<name>.mdc` — frontmatter derived from `.yml` sidecar |
-| GitHub Copilot | `.github/instructions/<name>.md` — frontmatter derived from `.yml` sidecar |
-
-**Equivalence**: `.ai/rules/<name>.md` is the same thing as the content in `CLAUDE.md`, `.cursor/rules/<name>.mdc`, etc. — those are generated outputs, not sources.
-
----
-
-## Build Script
-
-The project's build script (`python .ai/skills/multi-ai/scripts/build-skills.py`) is idempotent — safe to run multiple times. After any change to `.ai/skills/` or `.ai/rules/`, run it to propagate changes to all harness outputs.

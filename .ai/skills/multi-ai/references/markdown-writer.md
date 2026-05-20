@@ -1,6 +1,6 @@
 # Markdown Writer
 
-Best practices for writing effective AI configuration markdown. Harness-agnostic — applies to both skills and rules.
+Best practices for writing effective AI configuration markdown. Harness-agnostic — applies to both skills and project context.
 
 ---
 
@@ -29,11 +29,11 @@ Every skill needs explicit ✅ / ❌ sections. These teach the agent when to eng
 - User asks to validate harness skill folders
 
 ## When NOT to use ❌
-- Editing CLAUDE.md, AGENTS.md, .cursor/rules/ directly → redirect to multi-ai-wall
-- Translating skills between harnesses (harness-A → harness-B)
+- Editing CLAUDE.md, AGENTS.md, .cursorrules directly → redirect to multi-ai-wall
+- General coding tasks unrelated to AI configuration
 ```
 
-Trigger keywords must match words users actually type. NOT clauses must name specific excluded paths or scenarios — vague exclusions ("NOT for general editing") don't count.
+Trigger keywords must match words users actually type. NOT clauses must name specific excluded paths or scenarios.
 
 ### Description Formula
 
@@ -42,7 +42,7 @@ Trigger keywords must match words users actually type. NOT clauses must name spe
 ```
 
 Example:
-> Manage multi-harness AI skill and rule configurations from a single source of truth in `.ai/`. Use when editing `.ai/skills/` or `.ai/rules/` files, designing or reviewing skills/rules, or building harness output. NOT for writing CLAUDE.md, AGENTS.md, .cursor/rules/, or .github/instructions/ directly.
+> Manage AI assistant configuration across all harnesses from a single source of truth in `.ai/`. Use when editing `.ai/skills/` or `.ai/project-context.md`, designing or reviewing skills, or building harness output. NOT for writing CLAUDE.md, AGENTS.md, .cursorrules, or .github/copilot-instructions.md directly.
 
 - 25–50 words ideal, 100 words maximum
 - Semantically identical across all four harness yamls (adapted for length/field constraints)
@@ -75,9 +75,9 @@ Document edge cases (missing input, already-exists, partial failure) after the m
 
 ---
 
-## Rule-Specific Practices
+## Project-Context Practices
 
-### 7-Section Template for Master Root
+### 7-Section Template
 
 ```markdown
 # <Project Name>
@@ -106,17 +106,17 @@ Document edge cases (missing input, already-exists, partial failure) after the m
 
 - Under 200 lines: preferred
 - 200–350 lines: acceptable, monitor growth
-- Over 350 lines: must trim — move content to skills or separate rule files
+- Over 350 lines: must trim — move content to skills
 
-Every line in a rule loads on every agent session. Write with that cost in mind.
+Every line in project context loads on every agent session. Write with that cost in mind.
 
 ### Declarative vs Procedural Language
 
-Rules should be **declarative**: state what is true, what the invariants are.
+Project context should be **declarative**: state what is true, what the invariants are.
 
 ```markdown
 ✅ Declarative: "All API routes validate input with Zod before business logic."
 ❌ Procedural: "When adding an API route, first import Zod, then define the schema, then..."
 ```
 
-Procedural multi-step instructions belong in skills, not rules.
+Procedural multi-step instructions belong in skills, not project context.
