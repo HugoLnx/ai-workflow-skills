@@ -14,57 +14,18 @@ Never write to `CLAUDE.md`, `AGENTS.md`, `.cursorrules`, `.github/copilot-instru
 
 ## `.ai/project-context.md` — Project Context Source of Truth
 
-A single markdown file containing always-on project-level context. Distributed to all harnesses via symlinks:
+A single markdown file containing always-on project-level context. The project-context builder ensures `CLAUDE.md`, `AGENTS.md`, `.cursorrules`, and `.github/copilot-instructions.md` always reflect this file.
 
-| Symlink | Points to |
-|---|---|
-| `CLAUDE.md` | `.ai/project-context.md` |
-| `AGENTS.md` | `.ai/project-context.md` |
-| `.cursorrules` | `.ai/project-context.md` |
-| `.github/copilot-instructions.md` | `.ai/project-context.md` |
+**Equivalence**: `.ai/project-context.md` has the same meaning and purpose as `CLAUDE.md` and `AGENTS.md` — it is the project-level context the agent reads on every session.
 
-**Equivalence**: `.ai/project-context.md` IS `CLAUDE.md`, `AGENTS.md`, `.cursorrules`, and `.github/copilot-instructions.md` — they are the same file via symlinks. Edit only the source.
+Edit only `.ai/project-context.md` — never the harness files directly.
 
 **Forbidden**: `.ai/rules/`, `.cursor/rules/`, `.github/instructions/` — these folders must not exist.
-
-Build symlinks with:
-```bash
-python .ai/skills/multi-ai/scripts/build-context.py
-```
 
 ---
 
 ## `.ai/skills/` — Skill Source of Truth
 
-```
-.ai/skills/<name>/
-  content.md          # Skill body — pure markdown, no frontmatter
-  frontmatter/
-    claude.yaml       # Frontmatter for Claude Code
-    codex.yaml        # Frontmatter for OpenAI Codex CLI
-    cursor.yaml       # Frontmatter for Cursor
-    copilot.yaml      # Frontmatter for GitHub Copilot
-  references/         # Progressive-disclosure reference files (symlinked to harness folders)
-  scripts/            # Helper scripts (symlinked to harness folders)
-```
+Each skill lives under `.ai/skills/<name>/` as a directory with a `content.md` body and per-harness frontmatter. The skill builder ensures the four harness skill folders (`.claude/skills/`, `.agents/skills/`, `.cursor/skills/`, `.github/skills/`) always reflect the source.
 
-The build script generates one output folder per skill per harness:
-
-| Harness | Output folder |
-|---|---|
-| Claude Code | `.claude/skills/<name>/` |
-| OpenAI Codex CLI | `.agents/skills/<name>/` |
-| Cursor | `.cursor/skills/<name>/` |
-| GitHub Copilot | `.github/skills/<name>/` |
-
-Each harness output folder contains:
-- `SKILL.md` — frontmatter from `frontmatter/<harness>.yaml` + `@content.md` (nothing else)
-- `content.md` — symlink to `.ai/skills/<name>/content.md`
-- All other files/folders — symlinked at the same relative path (never copied)
-
-**Equivalence**: `.ai/skills/<name>/content.md` is the same thing as the harness `SKILL.md` in meaning and purpose.
-
-Build all harness skill output with:
-```bash
-python .ai/skills/multi-ai/scripts/build-skills.py
-```
+Edit only files under `.ai/skills/` — never the harness skill folders directly.
