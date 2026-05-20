@@ -1,0 +1,69 @@
+# Core: Folder Structure and Equivalences
+
+Always load this reference. It defines where things live and what they mean.
+
+---
+
+## Hard Restriction
+
+The agent writes **only** to `.ai/` source files. The build script is the sole writer of harness output files.
+
+Never write to `CLAUDE.md`, `AGENTS.md`, `.claude/skills/`, `.agents/skills/`, `.cursor/rules/`, `.cursor/skills/`, `.github/instructions/`, or `.github/skills/` directly. If you catch yourself about to do so, stop and consult `multi-ai-wall`.
+
+---
+
+## `.ai/skills/` — Skill Source of Truth
+
+```
+.ai/skills/<name>/
+  content.md          # Skill body — pure markdown, no frontmatter
+  frontmatter/
+    claude.yaml       # Frontmatter for Claude Code
+    codex.yaml        # Frontmatter for OpenAI Codex CLI
+    cursor.yaml       # Frontmatter for Cursor
+    copilot.yaml      # Frontmatter for GitHub Copilot
+  references/         # Progressive-disclosure reference files (symlinked to harness folders)
+  scripts/            # Helper scripts (symlinked to harness folders)
+```
+
+The build script generates one output folder per skill per harness:
+
+| Harness | Output folder |
+|---|---|
+| Claude Code | `.claude/skills/<name>/` |
+| OpenAI Codex CLI | `.agents/skills/<name>/` |
+| Cursor | `.cursor/skills/<name>/` |
+| GitHub Copilot | `.github/skills/<name>/` |
+
+Each harness output folder contains:
+- `SKILL.md` — frontmatter from `frontmatter/<harness>.yaml` + `@content.md` (nothing else)
+- `content.md` — symlink to `.ai/skills/<name>/content.md`
+- All other files/folders — symlinked at the same relative path (never copied)
+
+**Equivalence**: `.ai/skills/<name>/content.md` is the same thing as the harness `SKILL.md` in meaning and purpose — the harness file is just the delivery wrapper.
+
+---
+
+## `.ai/rules/` — Rule Source of Truth
+
+```
+.ai/rules/<name>.md   # Rule body — pure markdown, no frontmatter
+.ai/rules/<name>.yml  # Sidecar metadata (optional; controls per-harness behavior)
+```
+
+The build script distributes rule content to each harness:
+
+| Harness | Output |
+|---|---|
+| Claude Code | `CLAUDE.md` — managed imports block (`@file .ai/rules/<name>.md`) |
+| Codex CLI | `AGENTS.md` — same managed imports block |
+| Cursor | `.cursor/rules/<name>.mdc` — frontmatter derived from `.yml` sidecar |
+| GitHub Copilot | `.github/instructions/<name>.md` — frontmatter derived from `.yml` sidecar |
+
+**Equivalence**: `.ai/rules/<name>.md` is the same thing as the content in `CLAUDE.md`, `.cursor/rules/<name>.mdc`, etc. — those are generated outputs, not sources.
+
+---
+
+## Build Script
+
+The project's build script (`python .ai/skills/multi-ai/scripts/build-skills.py`) is idempotent — safe to run multiple times. After any change to `.ai/skills/` or `.ai/rules/`, run it to propagate changes to all harness outputs.

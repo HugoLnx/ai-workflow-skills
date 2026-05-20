@@ -1,7 +1,0 @@
-description: |
-  Manage project rules across Claude Code, Codex CLI, Cursor, and GitHub Copilot
-  from a single source of truth in .ai/rules/. Use when initialising the rules
-  scaffold, adding rules, generating the build script, validating, listing, or
-  migrating existing rules. NOT for writing .cursor/rules/ files directly.
-globs: []
-alwaysApply: false

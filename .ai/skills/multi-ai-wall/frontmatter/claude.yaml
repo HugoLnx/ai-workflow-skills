@@ -1,0 +1,6 @@
+description: |
+  Guard that intercepts writes to AI harness output files. Always active.
+  Blocks any attempt to write CLAUDE.md, AGENTS.md, .claude/skills/,
+  .agents/skills/, .cursor/rules/, .cursor/skills/, .github/instructions/,
+  or .github/skills/ and redirects to the multi-ai skill instead.
+  NOT for: reading those files, running build scripts, or editing .ai/ source files.

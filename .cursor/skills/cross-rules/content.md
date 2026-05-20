@@ -1,1 +1,0 @@
-../../../.ai/skills/cross-rules/content.md
