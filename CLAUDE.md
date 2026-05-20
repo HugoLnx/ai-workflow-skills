@@ -61,3 +61,7 @@ External reference skill implementations organized by category (`agentsmd/`, `cl
 - Non-`.yaml` files must be symlinked, not copied, to prevent silent drift.
 - `SKILL.md` files should be tiny: frontmatter + one `@content.md` line. Any `SKILL.md` over ~10 lines is a copy-paste violation.
 - Skill quality is governed by the 10-axis rubric in `.ai/skills/cross-skills/references/skill-quality-checklist.md`.
+
+<!-- cross-rules:imports:start -->
+@file .ai/rules/root.md
+<!-- cross-rules:imports:end -->
