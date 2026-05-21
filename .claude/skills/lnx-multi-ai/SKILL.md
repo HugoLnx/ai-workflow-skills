@@ -1,0 +1,19 @@
+---
+description: |
+  Manage AI assistant configuration across Claude Code, Codex CLI, Cursor, and
+  GitHub Copilot from a single source of truth under .ai/. Use when editing
+  .ai/skills/ or .ai/project-context.md, designing or reviewing skills,
+  harness output, migrating existing harness configs, initializing a project,
+  or validating project structure. NOT for writing CLAUDE.md, AGENTS.md,
+  .cursor/rules/, .github/instructions/, or any harness output file directly.
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Glob
+  - Grep
+argument-hint: "edit | design | build | migrate | init | validate | cleanup"
+---
+
+@content.md

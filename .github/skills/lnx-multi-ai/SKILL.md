@@ -1,0 +1,5 @@
+---
+applyTo: ".ai/**"
+---
+
+@content.md

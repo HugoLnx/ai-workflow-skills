@@ -1,0 +1,1 @@
+../../../.ai/skills/lnx-grill-me/content.md

@@ -1,0 +1,12 @@
+---
+description: |
+  Manage AI assistant configuration across multiple harnesses from a single
+  source of truth under .ai/. Use when editing .ai/skills/ or .ai/project-context.md,
+  designing skills/rules, building harness output, migrating existing configs,
+  or validating structure. NOT for writing harness output files directly.
+globs:
+  - ".ai/**"
+alwaysApply: false
+---
+
+@content.md
