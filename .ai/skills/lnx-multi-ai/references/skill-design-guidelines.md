@@ -29,6 +29,7 @@ Every skill description (in all four `frontmatter/*.yaml` files) must follow:
 | Anti-patterns | At least 3, each with all 5 fields (see template below) |
 | References table | If the skill has `references/` files — every row needs a "Consult When" column |
 | Output contracts | One template per mode or major action (see format below) |
+| `frontmatter/` | All four `<harness>.yaml` files present — regardless of which harnesses are enabled in `.ai/config.yml` |
 
 ### Mermaid Flowchart Rule
 
@@ -124,6 +125,7 @@ Before publishing any skill, verify each axis passes:
 
 ## Pre-Publish Gate (run in order)
 
+0. Confirm all four `frontmatter/*.yaml` files exist
 1. Word-count the description — trim if >100 words
 2. Count anti-patterns — must be ≥3 with all 5 fields
 3. Check every branching flow has a Mermaid diagram

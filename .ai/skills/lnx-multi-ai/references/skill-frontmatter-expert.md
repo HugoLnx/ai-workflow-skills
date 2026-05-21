@@ -4,6 +4,21 @@ Supported fields per harness for skill frontmatter. Each `frontmatter/<harness>.
 
 ---
 
+## Creation Rule
+
+When creating a new skill, **always create all four frontmatter files**:
+
+```
+frontmatter/claude.yaml
+frontmatter/codex.yaml
+frontmatter/cursor.yaml
+frontmatter/copilot.yaml
+```
+
+Whether a harness is `enabled: false` in `.ai/config.yml` is irrelevant at creation time — that flag only controls whether the build script writes output to that harness. The frontmatter files must always exist so the skill is ready to build for any harness at any time without requiring edits to the source.
+
+---
+
 ## Claude Code (`claude.yaml`)
 
 Written to: `.claude/skills/<name>/SKILL.md`
