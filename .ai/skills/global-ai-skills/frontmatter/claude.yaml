@@ -7,3 +7,4 @@ allowed-tools:
   - Read
   - Write
   - Bash
+argument-hint: "install <path> | list-global | list-local | remove <name> | replace <name> <path>"
