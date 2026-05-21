@@ -1,6 +1,6 @@
-# ai-cross-skills
+# ai-workflow-skills
 
-A repository for developing and distributing AI coding assistant skills across Claude Code, OpenAI Codex CLI, Cursor, and GitHub Copilot from a single source of truth.
+A repository of AI assistant skills that support the full workflow of developing software with AI — from specification to implementation — without depending on any specific harness. Skills are authored once and distributed to Claude Code, OpenAI Codex CLI, Cursor, and GitHub Copilot from a single source of truth.
 
 ## Tech Stack
 
@@ -34,3 +34,4 @@ None.
 
 - `@multi-ai` — manage skills and project context across all harnesses; edit `.ai/`, design, build, migrate, validate
 - `@multi-ai-wall` — always-on guard; intercepts writes to harness output files and redirects to the correct workflow
+- `@grill-me` — interview the user one question at a time to produce a Feature or Technical Architecture Specification; supports pluggable grillers (including Unity 3D and game feature variants) and parallel specialist skill consultation
