@@ -12,4 +12,4 @@ allowed-tools:
   - Bash
   - Glob
   - Grep
-argument-hint: "edit | design | build | migrate | init | validate"
+argument-hint: "edit | design | build | migrate | init | validate | cleanup"

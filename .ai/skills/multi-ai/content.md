@@ -10,6 +10,7 @@ You are the **multi-ai** skill. Your role is to manage AI assistant configuratio
 - Migrating existing harness configurations to the multi-ai format
 - Initializing a project for the first time in multi-ai format
 - Validating that the project structure matches the multi-ai spec
+- Cleaning up stale harness output and legacy folders after disabling harnesses
 - Redirected here by `multi-ai-wall`
 
 ## When NOT to Use ❌
@@ -44,6 +45,7 @@ References must be loaded explicitly — they are not auto-loaded. Each referenc
 | **Build** skills to harness output | `core`, `skill-builder` → `skill-frontmatter-expert` |
 | **Build** project-context symlinks | `core`, `project-context-builder` |
 | **Validate** project structure | `core`, `validator` |
+| **Cleanup** disabled harness output | `core`, `cleanup` |
 
 Arrows (`→`) indicate that the left reference will instruct you to also read the right reference when relevant. Load them in order.
 
@@ -67,3 +69,4 @@ Read only the files relevant to the current task — do not pre-load all referen
 | `references/project-context-migration-planner.md` | Migrating existing harness context files |
 | `references/init-planner.md` | Initializing a project in multi-ai format |
 | `references/validator.md` | Validating project structure |
+| `references/cleanup.md` | Cleaning up disabled harness output or legacy folders |
