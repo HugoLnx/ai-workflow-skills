@@ -22,8 +22,8 @@ The project context lives in `.ai/project-context.md`, symlinked to `CLAUDE.md`,
 
 ## Workflow Quick Overview
 
-- Edit skill content in `.ai/skills/`, then rebuild: `python .ai/skills/multi-ai/scripts/build-skills.py`
-- Edit project context in `.ai/project-context.md`, then rebuild: `python .ai/skills/multi-ai/scripts/build-context.py`
+- Edit skill content in `.ai/skills/`, then rebuild: `python .ai/skills/lnx-multi-ai/scripts/build-skills.py`
+- Edit project context in `.ai/project-context.md`, then rebuild: `python .ai/skills/lnx-multi-ai/scripts/build-context.py`
 - Both build scripts are idempotent — safe to run multiple times
 
 ## MCPs
@@ -32,7 +32,7 @@ None.
 
 ## Core Skills
 
-- `@multi-ai` — manage skills and project context across all harnesses; edit `.ai/`, design, build, migrate, validate
-- `@multi-ai-wall` — always-on guard; intercepts writes to harness output files and redirects to the correct workflow
-- `@grill-me` — interview the user one question at a time to produce a Feature or Technical Architecture Specification; supports pluggable grillers (including Unity 3D and game feature variants) and parallel specialist skill consultation
-- `@global-ai-skills` — install, list, and remove skills from global harness folders (`~/.claude/skills/`, `~/.agents/skills/`, `~/.cursor/skills/`, `~/.copilot/skills/`); supports listing local project skills with per-harness build status
+- `@lnx-multi-ai` — manage skills and project context across all harnesses; edit `.ai/`, design, build, migrate, validate
+- `@lnx-multi-ai-wall` — always-on guard; intercepts writes to harness output files and redirects to the correct workflow
+- `@lnx-grill-me` — interview the user one question at a time to produce a Feature or Technical Architecture Specification; supports pluggable grillers (including Unity 3D and game feature variants) and parallel specialist skill consultation
+- `@lnx-ai-global-skills` — install, list, and remove skills from global harness folders (`~/.claude/skills/`, `~/.agents/skills/`, `~/.cursor/skills/`, `~/.copilot/skills/`); supports listing local project skills with per-harness build status

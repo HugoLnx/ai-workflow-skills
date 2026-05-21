@@ -1,0 +1,7 @@
+description: |
+  Interview the user one question at a time to build a Feature or Technical Architecture
+  Specification. Writes session state to .ai/grills/. Accepts @specialist skills for
+  domain-enriched critiques via parallel subagents. Use when invoked as /lnx-grill-me or
+  user says "grill me", "interview me", or "help me spec out".
+  NOT for: implementing specs, quick Q&A, or tasks with no spec artifact needed.
+alwaysApply: false
