@@ -205,7 +205,7 @@ def main():
         prog="global-ai-skills",
         description="Install, list, and remove AI skills from global harness folders.",
     )
-    sub = parser.add_subparsers(dest="command", required=True)
+    sub = parser.add_subparsers(dest="command", required=False)
 
     p = sub.add_parser("install", help="Install a skill globally from a source path")
     p.add_argument("path", help="Path to skill source directory (must contain content.md)")
@@ -227,6 +227,18 @@ def main():
     p.set_defaults(func=cmd_replace)
 
     args = parser.parse_args()
+
+    if args.command is None:
+        print("global-ai-skills — manage AI skills across global harness folders\n")
+        print("Commands:")
+        print("  install <path>          Install a skill globally from a source path")
+        print("  list-global             List skills installed in global harness folders")
+        print("  list-local              List skills found in the current project")
+        print("  remove <name>           Remove a globally installed skill")
+        print("  replace <name> <path>   Replace a globally installed skill with a new source")
+        print("\nRun 'global-ai-skills <command> --help' for command details.")
+        return
+
     args.func(args)
 
 

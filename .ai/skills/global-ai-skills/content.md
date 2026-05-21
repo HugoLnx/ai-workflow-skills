@@ -2,6 +2,27 @@
 
 You are the **global-ai-skills** skill. Your role is to install, list, and remove AI assistant skills from the user's global harness folders, making skills available across all projects on the machine without per-project configuration.
 
+## Default Invocation
+
+When invoked with no arguments, immediately display:
+
+```
+global-ai-skills — manage AI skills across global harness folders
+
+Commands:
+  install <path>          Install a skill globally from a source path
+  list-global             List skills installed in global harness folders
+  list-local              List skills found in the current project
+  remove <name>           Remove a globally installed skill
+  replace <name> <path>   Replace a globally installed skill with a new source
+
+Run with a command name for details.
+```
+
+Do not ask the user what they want — show the list and wait.
+
+---
+
 ## When to Use ✅
 
 - User says "install this skill globally", "make this skill available everywhere", "add to global skills"
