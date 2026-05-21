@@ -35,3 +35,4 @@ None.
 - `@multi-ai` — manage skills and project context across all harnesses; edit `.ai/`, design, build, migrate, validate
 - `@multi-ai-wall` — always-on guard; intercepts writes to harness output files and redirects to the correct workflow
 - `@grill-me` — interview the user one question at a time to produce a Feature or Technical Architecture Specification; supports pluggable grillers (including Unity 3D and game feature variants) and parallel specialist skill consultation
+- `@global-ai-skills` — install, list, and remove skills from global harness folders (`~/.claude/skills/`, `~/.agents/skills/`, `~/.cursor/skills/`, `~/.copilot/skills/`); supports listing local project skills with per-harness build status
