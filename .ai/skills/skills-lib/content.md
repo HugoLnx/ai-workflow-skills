@@ -77,10 +77,10 @@ Source skills also scanned: `.ai/skills/`
 
 ## Operations
 
-Run all operations via the script:
+Run all operations via the script. `<base_dir>` is the "Base directory for this skill" path from the invocation header.
 
 ```bash
-python .ai/skills/skills-lib/scripts/skills-lib.py <command> [args]
+python "<base_dir>/scripts/skills-lib.py" <command> [args]
 ```
 
 ### Commands

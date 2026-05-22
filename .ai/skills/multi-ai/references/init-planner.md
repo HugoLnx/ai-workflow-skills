@@ -52,9 +52,9 @@ If no existing harness configuration is found:
 
 2. Write `.ai/project-context.md` with the populated content
 
-3. Run the build script to create symlinks:
+3. Run the build script to create symlinks (`<base_dir>` = "Base directory for this skill" from the invocation header):
    ```bash
-   python .ai/skills/multi-ai/scripts/build-context.py
+   python "<base_dir>/scripts/build-context.py"
    ```
 
 4. Ask whether they want to create an initial skill now — if yes, coordinate with `planner` and `skill-builder`

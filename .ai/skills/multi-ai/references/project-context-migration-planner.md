@@ -57,9 +57,9 @@ Proceed with migration? (yes / no / edit plan)
 
 2. For items classified as `→ skill`: do **not** add to project-context — offer to create skills via `references/skill-builder.md` after migration completes
 
-3. Run the build script to create/update symlinks:
+3. Run the build script to create/update symlinks (`<base_dir>` = "Base directory for this skill" from the invocation header):
    ```bash
-   python .ai/skills/multi-ai/scripts/build-context.py
+   python "<base_dir>/scripts/build-context.py"
    ```
 
 4. If the original `CLAUDE.md`, `AGENTS.md`, etc. were regular files (not symlinks): the build script will report an error. Remove the regular files first, then re-run.

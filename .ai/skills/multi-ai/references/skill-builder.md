@@ -25,8 +25,10 @@ harnesses:
 
 ## Running the Build Script
 
+`<base_dir>` is the "Base directory for this skill" path from the invocation header.
+
 ```bash
-python .ai/skills/multi-ai/scripts/build-skills.py
+python "<base_dir>/scripts/build-skills.py"
 ```
 
 The script is idempotent — safe to run multiple times. It prints a summary of SKILL.md files written and symlinks created/verified. A non-zero exit means at least one error.

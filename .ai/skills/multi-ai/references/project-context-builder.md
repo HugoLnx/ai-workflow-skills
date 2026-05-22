@@ -38,8 +38,10 @@ No managed imports block, no frontmatter processing, no generated files — just
 
 ## Running the Build Script
 
+`<base_dir>` is the "Base directory for this skill" path from the invocation header.
+
 ```bash
-python .ai/skills/multi-ai/scripts/build-context.py
+python "<base_dir>/scripts/build-context.py"
 ```
 
 The script is idempotent — safe to run multiple times. It creates or verifies each symlink and prints a summary.

@@ -10,8 +10,10 @@ After disabling one or more harnesses in `.ai/config.yml`, run cleanup to remove
 
 ## How to run
 
+`<base_dir>` is the "Base directory for this skill" path from the invocation header.
+
 ```bash
-python .ai/skills/multi-ai/scripts/cleanup.py
+python "<base_dir>/scripts/cleanup.py"
 ```
 
 The script lists everything it would delete — split into harness outputs and legacy folders — then asks for a single confirmation before acting.
@@ -43,6 +45,6 @@ The script lists everything it would delete — split into harness outputs and l
 Re-enable it in `.ai/config.yml`, then rebuild:
 
 ```bash
-python .ai/skills/multi-ai/scripts/build-skills.py
-python .ai/skills/multi-ai/scripts/build-context.py
+python "<base_dir>/scripts/build-skills.py"
+python "<base_dir>/scripts/build-context.py"
 ```
