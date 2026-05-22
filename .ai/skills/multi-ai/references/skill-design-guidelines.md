@@ -34,7 +34,7 @@ Every skill description (in all four `frontmatter/*.yaml` files) must follow:
 
 ---
 
-## Preferred content.md Structure
+## Preferred content.md structure
 
 `content.md` is for activation routing and minimum survival knowledge only. Deep knowledge, workflows, anti-pattern details, and reference material belong in `references/*.md` files loaded on demand.
 
@@ -43,10 +43,10 @@ Prefer five fixed sections in `content.md`:
 - **`## Description`** — One or two sentences. What this skill does and its core purpose.
 - **`## Activate me when...`** — Up to 3 bullet points. Concrete trigger phrases or conditions that signal this skill should be loaded.
 - **`## Do NOT activate me when...`** — Up to 3 bullet points. Concrete exclusions; at least one realistic false-positive the model might otherwise make.
-- **`## Full Knowledge Map`** — References table to `references/*.md` files. Each row must include a "Load when" condition so the model only loads what the current task requires.
+- **`## References table`** — References table to `references/*.md` files. Each row must include a "Load when" condition so the model only loads what the current task requires.
 - **`## Minimum Knowledge`** — Up to 6 bullet points. The essential instructions a model must follow if the context is too crowded to load any reference files. Must be self-contained and actionable without any references.
 
-### Minimal content.md skeleton
+### Preferred content.md skeleton
 
 ```markdown
 # <skill-name> — as of YYYY-MM-DD
@@ -67,7 +67,7 @@ Prefer five fixed sections in `content.md`:
 - <Exclusion 2>
 - <Exclusion 3>
 
-## Full Knowledge Map
+## References table
 
 | File | Load when |
 |---|---|
@@ -84,9 +84,13 @@ Prefer five fixed sections in `content.md`:
 - <Essential directive 6>
 ```
 
-### Knowledge file convention
+### References discipline
 
-Prefer `references/core-knowledge.md` for a single topic. When a skill covers multiple distinct topics, split into separate files (e.g., `references/patterns.md`, `references/anti-patterns.md`). Never put deep knowledge directly in `content.md`.
+- Anti-patterns must never appear in `content.md`. Place them in `references/core-knowledge.md` or in the `references/*.md` file that best matches their context (e.g., `references/anti-patterns.md`).
+- Complex output contracts must not appear in `content.md`. Place them in the relevant `references/*.md` file.
+- Each `references/*.md` file must have a distinct loading condition. Do not create multiple files that are always loaded together — consolidate them into a single file (prefer `references/core-knowledge.md` when all knowledge must always be enabled).
+- Prefer `references/core-knowledge.md` for a single topic. When a skill covers multiple distinct topics with different load conditions, split into separate files (e.g., `references/listing-models.md`, `references/editing-models.md`).
+- Never put deep knowledge directly in `content.md`.
 
 ---
 
@@ -98,9 +102,9 @@ Prefer `references/core-knowledge.md` for a single topic. When a skill covers mu
 | When to use ✅ | Concrete trigger phrases; specific conditions |
 | When NOT to use ❌ | Concrete exclusions; at least one realistic false-positive prevented |
 | Process / decision flow | Step-by-step or Mermaid `flowchart TD` — required for any branching logic |
-| Anti-patterns | At least 3, each with all 5 fields (see template below) |
-| References table | If the skill has `references/` files — every row needs a "Consult When" column |
-| Output contracts | One template per mode or major action (see format below) |
+| Minimum Knowledge | Up to 6 self-contained bullet points; actionable without loading any references |
+| References table | Every `references/*.md` file listed; each row needs a "Load when" condition |
+| Output contracts | Simple contracts inline; complex contracts in `references/*.md` (see format below) |
 | `frontmatter/` | All four `<harness>.yaml` files present — regardless of which harnesses are enabled in `.ai/config.yml` |
 
 ### Mermaid Flowchart Rule
@@ -184,14 +188,15 @@ Before publishing any skill, verify each axis passes:
 |---|---|
 | 1 — Description Quality (2×) | Follows formula; 25–50 words; NOT clause is specific |
 | 2 — Scope Discipline (2×) | One expertise domain; concrete trigger phrases; concrete exclusions |
-| 3 — Progressive Disclosure | content.md fits its size tier (see Size Tiers table); Huge requires user permission; content.md contains only activation rules and Minimum Knowledge (≤6 bullets); deep knowledge in `references/`; Full Knowledge Map lists every ref with a load condition |
-| 4 — Anti-Pattern Coverage | ≥3 anti-patterns; all 5 fields present; timelines use concrete dates |
+| 3 — Progressive Disclosure | content.md fits its size tier (see Size Tiers table); Huge requires user permission; content.md contains only activation rules and Minimum Knowledge (≤6 bullets); anti-patterns and complex contracts in `references/`; References table lists every ref with a distinct load condition |
+| 4 — Anti-Pattern Coverage | ≥3 anti-patterns; all 5 fields present; timelines use concrete dates; should be written at referred references/* markdown files |
 | 5 — Self-Contained Tools | Scripts are complete; error handling present; dependencies documented |
 | 6 — Activation Precision | Domain-specific keywords; NOT clause prevents realistic false-positive; no unexplained overlap |
 | 7 — Visual Artifacts | Mermaid diagram for every branch; tables for multi-column comparisons |
 | 8 — Output Contracts | Each mode has explicit output format; `<placeholder>` slots; edge cases documented |
 | 9 — Temporal Awareness | `as of [YYYY-MM-DD]` in content.md; `CHANGELOG.md` with dated entry |
 | 10 — Documentation Quality | CHANGELOG follows `## [version] — YYYY-MM-DD`; self-describing reference filenames |
+| 11 — Limited Depth | Each `references/*.md` file ideally under 150 lines; total `references/` files ≤6 |
 
 ---
 
