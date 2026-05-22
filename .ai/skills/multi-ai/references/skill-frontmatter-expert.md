@@ -110,7 +110,7 @@ applyTo: "**"
 
 ## SKILL.md Format (all harnesses)
 
-Each harness `SKILL.md` contains **only** the frontmatter block followed by `@content.md`. It never duplicates the body.
+Each harness `SKILL.md` contains the frontmatter block followed by the full skill body. The body is embedded by `build-skills.py` from `.ai/skills/<name>/content.md` — do not write `@content.md` or paste content manually.
 
 ```markdown
 ---
@@ -120,7 +120,10 @@ allowed-tools:
   - Read
 ---
 
-@content.md
+# <skill-name> — as of YYYY-MM-DD
+
+## Description
+...
 ```
 
-Any `SKILL.md` over ~10 lines (frontmatter + `@content.md` line) is a copy-paste violation.
+Any `SKILL.md` containing only `@content.md` after the closing `---` was built with the old system — re-run `build-skills.py` to regenerate it with inline content.

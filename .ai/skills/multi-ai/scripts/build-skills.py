@@ -23,6 +23,7 @@ skills_processed = 0
 skill_mds_written = 0
 symlinks_created = 0
 symlinks_verified = 0
+symlinks_removed = 0
 errors = 0
 
 
@@ -53,6 +54,18 @@ def make_symlink(link: Path, target: Path) -> None:
         errors += 1
 
 
+def remove_content_md_symlink(link: Path) -> None:
+    global symlinks_removed, errors
+    if link.is_symlink():
+        link.unlink()
+        symlinks_removed += 1
+    elif link.exists():
+        print(
+            f"WARNING: {link} is a regular file, not a symlink — leaving it alone",
+            file=sys.stderr,
+        )
+
+
 def write_if_changed(path: Path, content: str) -> None:
     global skill_mds_written
     if path.exists() and path.read_text(encoding="utf-8") == content:
@@ -67,6 +80,14 @@ def main() -> int:
     if not SKILLS_SRC.is_dir():
         print(f"ERROR: {SKILLS_SRC} does not exist. Nothing to build.", file=sys.stderr)
         return 1
+
+    # Phase 0: Remove any existing content.md symlinks from harness outputs
+    for skill_dir in sorted(SKILLS_SRC.iterdir()):
+        if not skill_dir.is_dir():
+            continue
+        for harness_rel in HARNESSES.values():
+            content_link = REPO_ROOT / harness_rel / skill_dir.name / "content.md"
+            remove_content_md_symlink(content_link)
 
     for skill_dir in sorted(SKILLS_SRC.iterdir()):
         if not skill_dir.is_dir():
@@ -94,15 +115,16 @@ def main() -> int:
             target_base = REPO_ROOT / harness_rel / skill_name
             target_base.mkdir(parents=True, exist_ok=True)
 
-            # Symlink every child except frontmatter/
+            # Symlink every child except frontmatter/ and content.md
             for item in skill_dir.iterdir():
-                if item.name == "frontmatter":
+                if item.name in ("frontmatter", "content.md"):
                     continue
                 make_symlink(target_base / item.name, item)
 
-            # Write SKILL.md
+            # Write SKILL.md with frontmatter + inline content body
             frontmatter = yaml_src.read_text(encoding="utf-8")
-            skill_md = f"---\n{frontmatter}---\n\n@content.md\n"
+            content = content_src.read_text(encoding="utf-8")
+            skill_md = f"---\n{frontmatter}---\n\n{content}"
             write_if_changed(target_base / "SKILL.md", skill_md)
 
         skills_processed += 1
@@ -113,6 +135,7 @@ def main() -> int:
     print(f"  SKILL.md written : {skill_mds_written}")
     print(f"  Symlinks created : {symlinks_created}")
     print(f"  Symlinks verified: {symlinks_verified}")
+    print(f"  Symlinks removed : {symlinks_removed}")
     if errors:
         print(f"  Errors           : {errors} (see above)")
         return 1

@@ -1,1 +1,0 @@
-../../../.ai/skills/multi-ai-wall/content.md

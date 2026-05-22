@@ -24,12 +24,12 @@ Validates that the project structure matches the multi-ai architecture. Run all 
 |---|---|---|
 | error | Missing `content.md` | `.ai/skills/<name>/` exists but no `content.md` |
 | error | Missing `.yaml` file | Any of `claude.yaml`, `codex.yaml`, `cursor.yaml`, `copilot.yaml` absent from `.ai/skills/<name>/frontmatter/` |
-| error | Broken symlink | Harness `content.md` symlink missing or pointing to non-existent target |
-| error | Duplicated inline content | Harness `SKILL.md` contains the full skill body instead of `@content.md` |
+| warning | Stale content.md symlink | `content.md` symlink present in harness skill folder — old build artifact; re-run `build-skills.py` to remove |
+| error | Missing inline body | Harness `SKILL.md` contains `@content.md` directive instead of inline body — re-run `build-skills.py` |
 | error | Missing required frontmatter field | Required fields absent per harness (consult `skill-frontmatter-expert.md`) |
 | error | YAML parse error | Malformed `.yaml` file; show path and parse error |
 | warning | Stale `SKILL.md` | Frontmatter in a harness `SKILL.md` does not match the corresponding `<harness>.yaml` — re-run build script |
-| info | Extra files | Files in a harness skill folder that are neither `SKILL.md`, `content.md`, nor a symlink into `.ai/skills/<name>/` |
+| info | Extra files | Files in a harness skill folder that are neither `SKILL.md` nor a symlink into `.ai/skills/<name>/` |
 
 ---
 
@@ -44,8 +44,8 @@ Print one line per finding:
 ✗  .github/copilot-instructions.md  missing — run build-context.py
 ✓  project-context.md     42 lines — within budget
 ✗  .ai/rules/             forbidden folder exists — delete it
-✓  my-skill    claude      SKILL.md OK, symlink OK
-✗  my-skill    cursor      SKILL.md contains inline body — no-duplication violation
+✓  my-skill    claude      SKILL.md OK
+✗  my-skill    cursor      SKILL.md contains @content.md directive — re-run build-skills.py
 ⚠  my-skill    copilot     SKILL.md frontmatter stale — re-run build script
 ```
 

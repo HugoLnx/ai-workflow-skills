@@ -19,8 +19,8 @@ Scan all four harness skill folders for existing skills:
 
 For each found `SKILL.md`:
 1. Extract the frontmatter block (between `---` delimiters)
-2. Note whether the body is `@content.md` (already in multi-ai format) or inline content (needs migration)
-3. If `content.md` exists as a symlink: note the symlink target (may already be `.ai/skills/<name>/content.md`)
+2. Note whether the body is inline content (already in multi-ai format) or `@content.md` directive (built with old system — regenerate by re-running `build-skills.py`)
+3. If `content.md` exists as a symlink: it was created by the old build system — re-run `build-skills.py` to clean it up
 4. If `content.md` is a regular file: it contains the skill body to migrate
 
 Deduplicate: if the same skill slug exists in multiple harness folders with identical or near-identical content, treat them as one skill.
