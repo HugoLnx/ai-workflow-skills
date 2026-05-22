@@ -4,6 +4,10 @@ description: |
   domain-enriched critiques via parallel subagents. Use when invoked as /lnx-grill-me or
   user says "grill me", "interview me", or "help me spec out".
   NOT for: implementing specs, quick Q&A, or tasks with no spec artifact needed.
+tools:
+  - shell
+  - read_file
+  - write_file
 tags:
   - spec
   - interview
