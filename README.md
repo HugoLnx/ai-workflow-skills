@@ -32,15 +32,15 @@ Interviews you one question at a time to produce a **Feature Specification** or 
 
 ---
 
-### `lnx-ai-global-skills` — Global Skill Manager
+### `skills-lib` — Global Skill Manager
 
 Installs, lists, and removes skills from the user's **global** harness folders (`~/.claude/skills/`, `~/.agents/skills/`, etc.) so they're available in every project on the machine.
 
 ```
-/lnx-ai-global-skills install .ai/skills/lnx-grill-me
-/lnx-ai-global-skills list-global
-/lnx-ai-global-skills list-local
-/lnx-ai-global-skills remove lnx-grill-me
+/skills-lib install .ai/skills/lnx-grill-me
+/skills-lib list-global
+/skills-lib list-local
+/skills-lib remove lnx-grill-me
 ```
 
 `list-local` shows all skills found in the current project with a per-harness build status indicator — `!harness` means the skill exists in source but hasn't been built to that harness yet.
@@ -49,18 +49,18 @@ Supports Windows (Developer Mode) and Linux.
 
 ---
 
-### `lnx-multi-ai` — Skill & Context Manager
+### `multi-ai` — Skill & Context Manager
 
 The meta-skill for managing this repository itself. Use it to design, build, migrate, and validate skills and project context across all harnesses.
 
 ```
-/lnx-multi-ai build skills
-/lnx-multi-ai validate
+/multi-ai build skills
+/multi-ai validate
 ```
 
 ---
 
-### `lnx-multi-ai-wall` — Write Guard *(always-on)*
+### `multi-ai-wall` — Write Guard *(always-on)*
 
 Intercepts any attempt to write directly to harness output files (`CLAUDE.md`, `.claude/skills/`, etc.) and redirects to the correct workflow. Prevents accidental edits to generated files.
 
@@ -101,10 +101,10 @@ cd ai-workflow-skills
 pip install -r requirements.txt
 
 # Build all skills to harness output folders
-python .ai/skills/lnx-multi-ai/scripts/build-skills.py
+python .ai/skills/multi-ai/scripts/build-skills.py
 
 # Build project context symlinks
-python .ai/skills/lnx-multi-ai/scripts/build-context.py
+python .ai/skills/multi-ai/scripts/build-context.py
 ```
 
 Both scripts are idempotent — safe to run any number of times.
@@ -114,10 +114,10 @@ Both scripts are idempotent — safe to run any number of times.
 Make skills available across all your projects:
 
 ```bash
-python .ai/skills/lnx-ai-global-skills/scripts/lnx-ai-global-skills.py install .ai/skills/lnx-grill-me
-python .ai/skills/lnx-ai-global-skills/scripts/lnx-ai-global-skills.py install .ai/skills/lnx-multi-ai
+python .ai/skills/skills-lib/scripts/skills-lib.py install .ai/skills/lnx-grill-me
+python .ai/skills/skills-lib/scripts/skills-lib.py install .ai/skills/multi-ai
 # ... or install all at once from Claude Code:
-# /lnx-ai-global-skills install all local skills
+# /skills-lib install all local skills
 ```
 
 ---
@@ -126,9 +126,9 @@ python .ai/skills/lnx-ai-global-skills/scripts/lnx-ai-global-skills.py install .
 
 1. Create `.ai/skills/<your-skill>/content.md` with your skill logic
 2. Add `frontmatter/<harness>.yaml` for each harness you want to target
-3. Run `python .ai/skills/lnx-multi-ai/scripts/build-skills.py`
+3. Run `python .ai/skills/multi-ai/scripts/build-skills.py`
 
-The `lnx-multi-ai` skill can guide you through design, frontmatter, and validation interactively.
+The `multi-ai` skill can guide you through design, frontmatter, and validation interactively.
 
 ### Adding a Custom Griller
 
@@ -144,9 +144,9 @@ Drop a `<name>-griller.md` into `.ai/skills/lnx-grill-me/references/` — no reb
 ├── config.yml              ← harness enable/disable and path overrides
 └── skills/
     ├── lnx-grill-me/
-    ├── lnx-ai-global-skills/
-    ├── lnx-multi-ai/
-    └── lnx-multi-ai-wall/
+    ├── skills-lib/
+    ├── multi-ai/
+    └── multi-ai-wall/
 
 .claude/skills/             ← generated (do not edit directly)
 .agents/skills/             ← generated

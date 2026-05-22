@@ -1,1 +1,0 @@
-../../../.ai/skills/lnx-ai-global-skills/content.md
