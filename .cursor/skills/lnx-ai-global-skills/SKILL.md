@@ -1,9 +1,10 @@
 ---
 description: |
-  Install, list, and remove AI assistant skills from global harness folders (~/.claude/skills/,
+  Link, list, copy, and remove AI assistant skills from global harness folders (~/.claude/skills/,
   ~/.agents/skills/, ~/.cursor/skills/, ~/.copilot/skills/). Supports Windows and Linux.
-  Use when installing a skill globally, listing global or local project skills, removing or
-  replacing a global skill. NOT for: editing skill content, managing project-level harness output.
+  Use when linking a skill globally, copying a global skill into a project, listing global or
+  local project skills, removing or replacing a global skill. NOT for: editing skill content,
+  managing project-level harness output.
 alwaysApply: false
 ---
 
