@@ -8,4 +8,4 @@ allowed-tools:
   - Read
   - Write
   - Bash
-argument-hint: "link-as-global <path>... | copy-from-global <name>... | list-global | list-local | remove <name> | replace <name> <path>"
+argument-hint: "lib-link <path>... | harness-link <name>... | lib-pull <name>... | list-global | list-local | lib-unlink <name>... | harness-unlink <name>... | full-unlink <name>... | replace <name> <path>"
