@@ -18,6 +18,78 @@ Every skill description (in all four `frontmatter/*.yaml` files) must follow:
 
 ---
 
+## SKILL.md Size Tiers
+
+`content.md` line count governs which tier a skill belongs to. Choose the smallest tier that fits.
+
+| Tier | Max lines | When to use |
+|---|---|---|
+| **Micro** | 35 | Hard directioning only — best practices or hard workflow constraints that must always apply |
+| **Small** | 60 | Same intent as Micro; use when 25 lines is genuinely not enough |
+| **Medium** | 125 | Most skills — generic coding, testing, tooling specialists |
+| **Big** | 250 | Full specialist, knowledge base, or feature spec used as the primary skill in a prompt |
+| **Huge** | 500 | Avoid at all costs. Requires explicit user permission before writing. |
+
+**Default target**: Small (≤60 lines). If you reach Big, ask whether content can be moved to `references/`. If you reach Huge, stop and ask the user for permission.
+
+---
+
+## Preferred content.md Structure
+
+`content.md` is for activation routing and minimum survival knowledge only. Deep knowledge, workflows, anti-pattern details, and reference material belong in `references/*.md` files loaded on demand.
+
+Prefer five fixed sections in `content.md`:
+
+- **`## Description`** — One or two sentences. What this skill does and its core purpose.
+- **`## Activate me when...`** — Up to 3 bullet points. Concrete trigger phrases or conditions that signal this skill should be loaded.
+- **`## Do NOT activate me when...`** — Up to 3 bullet points. Concrete exclusions; at least one realistic false-positive the model might otherwise make.
+- **`## Full Knowledge Map`** — References table to `references/*.md` files. Each row must include a "Load when" condition so the model only loads what the current task requires.
+- **`## Minimum Knowledge`** — Up to 6 bullet points. The essential instructions a model must follow if the context is too crowded to load any reference files. Must be self-contained and actionable without any references.
+
+### Minimal content.md skeleton
+
+```markdown
+# <skill-name> — as of YYYY-MM-DD
+
+## Description
+
+<One or two sentences describing what this skill does.>
+
+## Activate me when...
+
+- <Concrete trigger condition 1>
+- <Concrete trigger condition 2>
+- <Concrete trigger condition 3>
+
+## Do NOT activate me when...
+
+- <Exclusion 1>
+- <Exclusion 2>
+- <Exclusion 3>
+
+## Full Knowledge Map
+
+| File | Load when |
+|---|---|
+| `references/core-knowledge.md` | Always — foundational rules and patterns |
+| `references/<topic>.md` | <Condition> |
+
+## Minimum Knowledge
+
+- <Essential directive 1>
+- <Essential directive 2>
+- <Essential directive 3>
+- <Essential directive 4>
+- <Essential directive 5>
+- <Essential directive 6>
+```
+
+### Knowledge file convention
+
+Prefer `references/core-knowledge.md` for a single topic. When a skill covers multiple distinct topics, split into separate files (e.g., `references/patterns.md`, `references/anti-patterns.md`). Never put deep knowledge directly in `content.md`.
+
+---
+
 ## Required `content.md` Sections
 
 | Section | Requirement |
@@ -112,7 +184,7 @@ Before publishing any skill, verify each axis passes:
 |---|---|
 | 1 — Description Quality (2×) | Follows formula; 25–50 words; NOT clause is specific |
 | 2 — Scope Discipline (2×) | One expertise domain; concrete trigger phrases; concrete exclusions |
-| 3 — Progressive Disclosure | content.md under 500 lines; deep content in `references/`; every ref listed |
+| 3 — Progressive Disclosure | content.md fits its size tier (see Size Tiers table); Huge requires user permission; content.md contains only activation rules and Minimum Knowledge (≤6 bullets); deep knowledge in `references/`; Full Knowledge Map lists every ref with a load condition |
 | 4 — Anti-Pattern Coverage | ≥3 anti-patterns; all 5 fields present; timelines use concrete dates |
 | 5 — Self-Contained Tools | Scripts are complete; error handling present; dependencies documented |
 | 6 — Activation Precision | Domain-specific keywords; NOT clause prevents realistic false-positive; no unexplained overlap |
