@@ -3,6 +3,7 @@
 
 import argparse
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -171,6 +172,18 @@ def build_playwright_command(command, resolved, profile_name, project_root, extr
     return cmd_str
 
 
+def cmd_check_prereqs(args):
+    pw = shutil.which("playwright")
+    if pw:
+        result = subprocess.run(["playwright", "--version"], capture_output=True, text=True)
+        version = result.stdout.strip() or "unknown"
+        print(f"OK: playwright found at {pw} (version {version})")
+    else:
+        print("ERROR: playwright not found on PATH.", file=sys.stderr)
+        print("Install with: pip install playwright && playwright install", file=sys.stderr)
+        sys.exit(1)
+
+
 def cmd_resolve_config(args):
     project_root = find_project_root()
     merged = load_and_merge_configs(project_root)
@@ -225,6 +238,8 @@ def main():
     parser = argparse.ArgumentParser(description="Browser automation helper for Playwright CLI")
     subparsers = parser.add_subparsers(dest="subcommand", required=True)
 
+    subparsers.add_parser("check-prereqs", help="Verify Playwright is installed")
+
     rc = subparsers.add_parser("resolve-config", help="Show resolved config for a profile")
     rc.add_argument("--profile", "-p", help="Profile name (default: auto-detect)")
 
@@ -235,7 +250,9 @@ def main():
     bc.add_argument("extra_args", nargs="*", help="Extra arguments passed to playwright")
 
     args = parser.parse_args()
-    if args.subcommand == "resolve-config":
+    if args.subcommand == "check-prereqs":
+        cmd_check_prereqs(args)
+    elif args.subcommand == "resolve-config":
         cmd_resolve_config(args)
     elif args.subcommand == "build-cmd":
         cmd_build_cmd(args)
