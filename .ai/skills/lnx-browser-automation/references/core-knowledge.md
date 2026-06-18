@@ -2,20 +2,20 @@
 
 ## Prerequisite check
 
-Before proposing commands, verify Playwright is available:
+Before proposing commands, verify `playwright-cli` is available:
 
 ```bash
 python "<skill-dir>/scripts/browser-automation.py" check-prereqs
 ```
 
-If it fails, ask the user to install: `pip install playwright && playwright install`.
+If it fails, install via: `python "<skill-dir>/scripts/browser-automation.py" install-deps`
 
 ## Config structure
 
 ```yaml
 ignore_home_config: true  # project-level only; skips global config entirely
 default:
-  browser: chrome       # unset by default (playwright defaults to chromium)
+  browser: chrome       # unset by default (playwright-cli defaults to chromium)
   headless: true        # true by default
   executable_path: "…"  # unset by default
 profiles:
@@ -84,7 +84,7 @@ flowchart TD
 ### resolve-config
 
 ```bash
-python "<skill-dir>/scripts/browser-automation.py" resolve-config [--profile <name>]
+python "<skill-dir>/scripts/browser-automation.py" resolve-config [--profile <name>] [overrides...]
 ```
 
 ### Output: resolve-config
@@ -96,15 +96,41 @@ python "<skill-dir>/scripts/browser-automation.py" resolve-config [--profile <na
 ### build-cmd
 
 ```bash
-python "<skill-dir>/scripts/browser-automation.py" build-cmd <command> [--profile <name>] [--exec] [-- extra-args...]
+python "<skill-dir>/scripts/browser-automation.py" build-cmd <command> [--profile <name>] [--exec] [overrides...] [-- extra-args...]
 ```
 
 Where `<command>` is: `open`, `screenshot`, `pdf`, `codegen`.
 
+### CLI override flags
+
+Both `resolve-config` and `build-cmd` accept these flags to override config values. CLI overrides take precedence over the resolved profile config.
+
+| Flag | Overrides config key | Notes |
+|---|---|---|
+| `--browser <name>` | `browser` | Same values as config: `chrome`, `chromium`, `cr`, `firefox`, `ff`, `webkit`, `wk` |
+| `--headless` / `--no-headless` | `headless` | |
+| `--isolated` / `--no-isolated` | `isolated` | |
+| `--executable-path <path>` | `executable_path` | |
+| `--extension-token <token>` | `extension_token` | |
+| `--user-data-dir <path>` | `overwrite_user_dir` | Implicitly sets `isolated: false` unless `--isolated` is also passed |
+
+### install-deps
+
+```bash
+python "<skill-dir>/scripts/browser-automation.py" install-deps
+```
+
+Runs `npm install -g @playwright/cli` to install the `playwright-cli` binary globally.
+
+### Output: install-deps
+
+**Result**: Installs `playwright-cli` via npm; prints the command being run
+**Next step**: Run `check-prereqs` to verify the installation
+
 ### Output: build-cmd
 
-**Result**: Full playwright CLI command string printed to stdout
-**With `--exec`**: Prints command then executes it; exits with playwright's return code
+**Result**: Full `playwright-cli` command string printed to stdout
+**With `--exec`**: Prints command then executes it; exits with playwright-cli's return code
 **Next step**: If no `--exec`, run the printed command via Bash
 
 ## Workflow
@@ -123,8 +149,9 @@ Where `<command>` is: `open`, `screenshot`, `pdf`, `codegen`.
 
 ## Guardrails
 
-- Always use the helper script — never run `playwright` directly; the script resolves browser, channel, user-data-dir, executable path, and extension token from config
+- Always use the helper script — never run `playwright-cli` directly; the script resolves browser, channel, user-data-dir, executable path, and extension token from config
 - Always run `resolve-config` first to understand the active profile before building commands
-- Pass one-off flags via `-- extra-args`, not by editing config files
+- Use CLI override flags (`--browser`, `--headless`, etc.) for one-off changes rather than editing config files
+- Pass extra playwright-specific flags via `-- extra-args` for anything not covered by override flags
 - Prefer `--exec` to run immediately rather than copy-pasting the output command
 - When the user says "use chrome" or similar, match against profile names or browser types — do not guess flags

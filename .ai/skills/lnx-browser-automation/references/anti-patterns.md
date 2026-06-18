@@ -1,12 +1,12 @@
 # Anti-Patterns
 
-### Anti-Pattern: Running playwright directly without the helper script
+### Anti-Pattern: Running playwright-cli directly without the helper script
 
-**Novice**: "I'll just run `playwright open https://example.com` — it's simpler."
-**Expert**: Running playwright directly bypasses profile resolution entirely: no browser/channel mapping, no user-data-dir, no executable path env var, no extension token. The helper script exists specifically to translate config into the correct flags. Always use `build-cmd --exec` instead.
-**Timeline**: 2026-06-18 (skill v0.1.0): helper script introduced as the sole entry point for all playwright commands.
+**Novice**: "I'll just run `playwright-cli open https://example.com` — it's simpler."
+**Expert**: Running playwright-cli directly bypasses profile resolution entirely: no browser/channel mapping, no user-data-dir, no executable path env var, no extension token. The helper script exists specifically to translate config into the correct flags. Always use `build-cmd --exec` instead.
+**Timeline**: 2026-06-18 (skill v0.1.0): helper script introduced as the sole entry point for all playwright-cli commands.
 **LLM mistake**: Models default to the simplest invocation of a CLI tool and skip wrapper scripts unless explicitly instructed, because training data overwhelmingly shows direct CLI usage.
-**Detection**: Any `playwright open`, `playwright screenshot`, `playwright pdf`, or `playwright codegen` command that does not originate from the helper script output.
+**Detection**: Any `playwright-cli open`, `playwright-cli screenshot`, `playwright-cli pdf`, or `playwright-cli codegen` command that does not originate from the helper script output.
 
 ### Anti-Pattern: Modifying config for a one-off command
 

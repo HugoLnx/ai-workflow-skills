@@ -131,7 +131,7 @@ def resolve_browser(resolved):
 
 def build_playwright_command(command, resolved, profile_name, project_root, extra_args):
     env_vars = {}
-    args = ["playwright", command]
+    args = ["playwright-cli", command]
 
     browser, channel = resolve_browser(resolved)
     if browser:
@@ -172,22 +172,56 @@ def build_playwright_command(command, resolved, profile_name, project_root, extr
     return cmd_str
 
 
+def _add_override_args(parser):
+    parser.add_argument("--browser", choices=sorted(BROWSER_ALIASES.keys()), help="Override browser from config")
+    parser.add_argument("--headless", action=argparse.BooleanOptionalAction, default=None, help="Override headless mode")
+    parser.add_argument("--executable-path", dest="executable_path", help="Override executable path")
+    parser.add_argument("--extension-token", dest="extension_token", help="Override extension token")
+    parser.add_argument("--user-data-dir", dest="user_data_dir", help="Override user data directory (exact path)")
+    parser.add_argument("--isolated", action=argparse.BooleanOptionalAction, default=None, help="Override isolated mode")
+
+
+def _apply_overrides(resolved, args):
+    if args.browser is not None:
+        resolved["browser"] = args.browser
+    if args.headless is not None:
+        resolved["headless"] = args.headless
+    if args.executable_path is not None:
+        resolved["executable_path"] = args.executable_path
+    if args.extension_token is not None:
+        resolved["extension_token"] = args.extension_token
+    if args.user_data_dir is not None:
+        resolved["overwrite_user_dir"] = args.user_data_dir
+        if args.isolated is None:
+            resolved["isolated"] = False
+    if args.isolated is not None:
+        resolved["isolated"] = args.isolated
+
+
 def cmd_check_prereqs(args):
-    pw = shutil.which("playwright")
+    pw = shutil.which("playwright-cli")
     if pw:
-        result = subprocess.run(["playwright", "--version"], capture_output=True, text=True)
+        result = subprocess.run(["playwright-cli", "--version"], capture_output=True, text=True)
         version = result.stdout.strip() or "unknown"
-        print(f"OK: playwright found at {pw} (version {version})")
+        print(f"OK: playwright-cli found at {pw} (version {version})")
     else:
-        print("ERROR: playwright not found on PATH.", file=sys.stderr)
-        print("Install with: pip install playwright && playwright install", file=sys.stderr)
+        print("ERROR: playwright-cli not found on PATH.", file=sys.stderr)
+        print("Install with: npm install -g @playwright/cli", file=sys.stderr)
         sys.exit(1)
+
+
+def cmd_install_deps(args):
+    cmd = ["npm", "install", "-g", "@playwright/cli"]
+    print(f"Running: {' '.join(cmd)}")
+    result = subprocess.run(cmd)
+    sys.exit(result.returncode)
 
 
 def cmd_resolve_config(args):
     project_root = find_project_root()
     merged = load_and_merge_configs(project_root)
     profile_name, resolved = resolve_profile(merged, args.profile)
+    _apply_overrides(resolved, args)
 
     user_data_dir = resolve_user_data_dir(resolved, profile_name, project_root)
     browser, channel = resolve_browser(resolved)
@@ -217,6 +251,7 @@ def cmd_build_cmd(args):
     project_root = find_project_root()
     merged = load_and_merge_configs(project_root)
     profile_name, resolved = resolve_profile(merged, args.profile)
+    _apply_overrides(resolved, args)
 
     cmd_str = build_playwright_command(args.command, resolved, profile_name, project_root, args.extra_args)
     print(cmd_str)
@@ -238,20 +273,25 @@ def main():
     parser = argparse.ArgumentParser(description="Browser automation helper for Playwright CLI")
     subparsers = parser.add_subparsers(dest="subcommand", required=True)
 
-    subparsers.add_parser("check-prereqs", help="Verify Playwright is installed")
+    subparsers.add_parser("check-prereqs", help="Verify playwright-cli is installed")
+    subparsers.add_parser("install-deps", help="Install playwright-cli via npm")
 
     rc = subparsers.add_parser("resolve-config", help="Show resolved config for a profile")
     rc.add_argument("--profile", "-p", help="Profile name (default: auto-detect)")
+    _add_override_args(rc)
 
     bc = subparsers.add_parser("build-cmd", help="Build a playwright CLI command")
     bc.add_argument("command", choices=["open", "screenshot", "pdf", "codegen"], help="Playwright command")
     bc.add_argument("--profile", "-p", help="Profile name (default: auto-detect)")
     bc.add_argument("--exec", action="store_true", help="Execute the command after printing it")
-    bc.add_argument("extra_args", nargs="*", help="Extra arguments passed to playwright")
+    _add_override_args(bc)
+    bc.add_argument("extra_args", nargs="*", help="Extra arguments passed to playwright-cli")
 
     args = parser.parse_args()
     if args.subcommand == "check-prereqs":
         cmd_check_prereqs(args)
+    elif args.subcommand == "install-deps":
+        cmd_install_deps(args)
     elif args.subcommand == "resolve-config":
         cmd_resolve_config(args)
     elif args.subcommand == "build-cmd":
