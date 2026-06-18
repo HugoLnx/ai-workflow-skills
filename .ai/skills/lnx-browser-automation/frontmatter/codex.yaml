@@ -1,0 +1,11 @@
+description: |
+  Browser automation via Playwright CLI with multi-profile configuration.
+  Resolves config from global (~/.ai/browser-automation/config.yml) and project
+  (.ai/browser-automation/config.yml), merges profiles, and builds playwright commands.
+  Use when the user wants to open a browser, take screenshots, generate PDFs, record
+  interactions with codegen, or mentions browser profiles / playwright.
+  NOT for: writing Playwright test scripts, installing browsers, Selenium/Puppeteer.
+tags:
+  - browser
+  - automation
+  - playwright
