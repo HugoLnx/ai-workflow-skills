@@ -149,6 +149,7 @@ Runs `npm install -g @playwright/cli` to install the `playwright-cli` binary glo
 
 ## Guardrails
 
+- **Never create or modify `config.yml` files** unless the user explicitly asks to create/update profiles or the config YAML — use CLI override flags for one-off changes instead
 - Always use the helper script — never run `playwright-cli` directly; the script resolves browser, channel, user-data-dir, executable path, and extension token from config
 - Always run `resolve-config` first to understand the active profile before building commands
 - Use CLI override flags (`--browser`, `--headless`, etc.) for one-off changes rather than editing config files

@@ -8,13 +8,13 @@
 **LLM mistake**: Models default to the simplest invocation of a CLI tool and skip wrapper scripts unless explicitly instructed, because training data overwhelmingly shows direct CLI usage.
 **Detection**: Any `playwright-cli open`, `playwright-cli screenshot`, `playwright-cli pdf`, or `playwright-cli codegen` command that does not originate from the helper script output.
 
-### Anti-Pattern: Modifying config for a one-off command
+### Anti-Pattern: Creating or modifying config.yml without explicit user request
 
-**Novice**: "Let me update config.yml to change the browser for this one request."
-**Expert**: Config files represent persistent user preferences. For one-off overrides, use `--profile <name>` to select a different existing profile, or pass extra flags after `--` in `build-cmd`. Editing config for a single command creates drift and may surprise the user on subsequent runs.
-**Timeline**: 2026-06-18 (skill v0.1.0): `build-cmd` supports `-- extra-args` passthrough for one-off flag overrides.
-**LLM mistake**: Models treat config files as mutable state they can freely edit to achieve a goal, without considering that config changes persist beyond the current task.
-**Detection**: Any `Write` or `Edit` call targeting `config.yml` in the same turn as a `build-cmd` invocation, where the edit is not explicitly requested by the user.
+**Novice**: "Let me update config.yml to change the browser for this request." / "I'll create a config.yml to set up a profile."
+**Expert**: Config files represent persistent user preferences and must never be created or modified unless the user explicitly asks to create/update profiles or the config YAML. For one-off overrides, use CLI override flags (`--browser`, `--headless`, etc.) or `--profile <name>` to select a different existing profile. Creating or editing config without being asked creates drift and may surprise the user on subsequent runs.
+**Timeline**: 2026-06-18 (skill v0.1.0): `build-cmd` supports CLI override flags and `-- extra-args` passthrough for one-off overrides.
+**LLM mistake**: Models treat config files as mutable state they can freely create or edit to achieve a goal, without considering that config changes persist beyond the current task. They may also proactively create config files "to help" when none exist.
+**Detection**: Any `Write` or `Edit` call targeting `config.yml` that was not explicitly requested by the user.
 
 ### Anti-Pattern: Assuming a default profile exists
 

@@ -31,5 +31,7 @@ Browser automation skill using Playwright CLI. Resolves browser profiles from la
 - Config: global `~/.ai/browser-automation/config.yml` + project `<project-root>/.ai/browser-automation/config.yml` (both optional; works with no config)
 - Subcommands: `check-prereqs` to verify install; `install-deps` to install `playwright-cli`; `resolve-config [--profile <name>]` to inspect settings; `build-cmd <open|screenshot|pdf|codegen> [--profile <name>] [--exec] [-- extra-args]` to build/run commands
 - Both subcommands accept override flags that take precedence over config: `--browser`, `--headless`/`--no-headless`, `--isolated`/`--no-isolated`, `--executable-path`, `--extension-token`, `--user-data-dir`
+- **Never create or modify `config.yml` files** unless the user explicitly asks to create/update profiles or the config YAML
+- For one-off changes, use CLI override flags instead of editing config
 - Profile selection: explicit `--profile` → profile with `use_as_default: true` → virtual `__default` (ephemeral, `isolated: true`)
 - `codegen` always runs headed regardless of config; all other commands respect the `headless` setting
