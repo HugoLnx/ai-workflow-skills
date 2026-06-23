@@ -1,0 +1,7 @@
+description: |
+  Analyze a task in the parent context, break it into 2-8 parallelizable
+  subtasks, group them by shared context into 2-4 subagent batches, and fan
+  out. Cancels if parallelism isn't warranted.
+  NOT for: sequential tasks, single-file changes, or tasks requiring
+  cross-subtask synthesis.
+alwaysApply: false
