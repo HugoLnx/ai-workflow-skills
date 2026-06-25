@@ -13,7 +13,7 @@ alwaysApply: false
 
 ## Description
 
-Browser automation skill using Playwright CLI. Resolves browser profiles from layered config (global + project), merges them, and builds correct `playwright` commands for opening pages, taking screenshots, generating PDFs, and recording user actions.
+Browser automation skill using Playwright CLI. Resolves browser profiles from layered config (global + project), merges them, and builds correct `playwright-cli` commands for opening pages, taking screenshots, generating PDFs, and recording user actions.
 
 ## Activate me when...
 
@@ -24,7 +24,7 @@ Browser automation skill using Playwright CLI. Resolves browser profiles from la
 ## Do NOT activate me when...
 
 - User wants to write Playwright test scripts (Python/JS test files — that's test authoring, not CLI automation)
-- User wants to install or update Playwright browsers (`playwright install`)
+- User wants to install or update Playwright browsers (`playwright-cli install`)
 - User wants to use Selenium, Puppeteer, or other non-Playwright tools
 
 ## References table
@@ -36,9 +36,13 @@ Browser automation skill using Playwright CLI. Resolves browser profiles from la
 
 ## Minimum Knowledge
 
-- Helper script: `<skill-dir>/scripts/browser-automation.py` — never run `playwright` directly; always use the script to resolve profiles
-- Before first use run `python "<skill-dir>/scripts/browser-automation.py" check-prereqs` to verify Playwright is installed
+- Helper script: `<skill-dir>/scripts/browser-automation.py` — never run `playwright-cli` directly; always use the script to resolve profiles
+- Before first use run `python "<skill-dir>/scripts/browser-automation.py" check-prereqs` to verify `playwright-cli` is installed
+- If missing, run `python "<skill-dir>/scripts/browser-automation.py" install-deps` to install `playwright-cli` via npm
 - Config: global `~/.ai/browser-automation/config.yml` + project `<project-root>/.ai/browser-automation/config.yml` (both optional; works with no config)
-- Two subcommands: `resolve-config [--profile <name>]` to inspect settings; `build-cmd <open|screenshot|pdf|codegen> [--profile <name>] [--exec] [-- extra-args]` to build/run commands
+- Subcommands: `check-prereqs` to verify install; `install-deps` to install `playwright-cli`; `resolve-config [--profile <name>]` to inspect settings; `build-cmd <open|screenshot|pdf|codegen> [--profile <name>] [--exec] [-- extra-args]` to build/run commands
+- Both subcommands accept override flags that take precedence over config: `--browser`, `--headless`/`--no-headless`, `--isolated`/`--no-isolated`, `--executable-path`, `--extension-token`, `--user-data-dir`
+- **Never create or modify `config.yml` files** unless the user explicitly asks to create/update profiles or the config YAML
+- For one-off changes, use CLI override flags instead of editing config
 - Profile selection: explicit `--profile` → profile with `use_as_default: true` → virtual `__default` (ephemeral, `isolated: true`)
 - `codegen` always runs headed regardless of config; all other commands respect the `headless` setting
